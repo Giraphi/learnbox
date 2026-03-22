@@ -4,6 +4,7 @@ type Vocabulary = {
   id: string;
   english: string;
   german: string;
+  level: number;
 };
 
 const db = new Dexie("LearnboxDB") as Dexie & {
@@ -11,15 +12,15 @@ const db = new Dexie("LearnboxDB") as Dexie & {
 };
 
 db.version(1).stores({
-  vocabularies: "id",
+  vocabularies: "id, level",
 });
 
 db.on("populate", (transaction) => {
   transaction.table("vocabularies").bulkAdd([
-    { id: "1", english: "stroller", german: "Kinderwagen" },
-    { id: "2", english: "reckless", german: "rücksichtslos" },
-    { id: "3", english: "irresponsible", german: "unverantwortlich" },
-    { id: "4", english: "deliberate", german: "absichtlich" },
+    { id: "1", english: "stroller", german: "Kinderwagen", level: 1 },
+    { id: "2", english: "reckless", german: "rücksichtslos", level: 1 },
+    { id: "3", english: "irresponsible", german: "unverantwortlich", level: 1 },
+    { id: "4", english: "deliberate", german: "absichtlich", level: 1 },
   ]);
 });
 

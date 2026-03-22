@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GiBrain } from "react-icons/gi";
-import ChestIcon from "@/app/components/ChestIcon";
+import ChestIcon from "@/components/ChestIcon";
 
 type NavItem = {
   href: string;
@@ -36,7 +36,7 @@ export default function BottomNavigation() {
   }
 
   return (
-    <nav className="sticky bottom-0 z-50 border-t border-foreground/10 bg-background/80 backdrop-blur-lg">
+    <nav className="fixed w-full bottom-0 z-50 border-t border-foreground/10 bg-background/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-md items-center justify-around px-6 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const active = isActive(item.href);

@@ -46,6 +46,7 @@ export default function AddVocabularyDialog({
       id: crypto.randomUUID(),
       english: trimmedEnglish,
       german: trimmedGerman,
+      level: 1,
     });
 
     handleClose();
@@ -55,7 +56,7 @@ export default function AddVocabularyDialog({
     <dialog
       ref={dialogRef}
       onClose={handleClose}
-      className="w-full max-w-sm rounded-xl border border-foreground/15 bg-background p-6 text-foreground backdrop:bg-black/60"
+      className="w-full max-w-sm rounded-xl border border-foreground/15 bg-background p-6 text-foreground"
     >
       <h2 className="mb-4 text-lg font-semibold">Add Vocabulary</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
