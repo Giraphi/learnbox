@@ -8,6 +8,6 @@ export function useIsStandalone() {
   return useSyncExternalStore(
     EMPTY_SUBSCRIBE,
     () => window.matchMedia("(display-mode: standalone)").matches,
-    () => false
+    () => true
   );
 }
