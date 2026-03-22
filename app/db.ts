@@ -1,17 +1,18 @@
 import Dexie, { type EntityTable } from "dexie";
 
-type Todo = {
+type Vocabulary = {
   id: string;
-  text: string;
+  english: string;
+  german: string;
 };
 
 const db = new Dexie("LearnboxDB") as Dexie & {
-  todos: EntityTable<Todo, "id">;
+  vocabularies: EntityTable<Vocabulary, "id">;
 };
 
 db.version(1).stores({
-  todos: "id",
+  vocabularies: "id",
 });
 
 export { db };
-export type { Todo };
+export type { Vocabulary };
