@@ -1,28 +1,25 @@
 "use client";
 
 import { useState, useId } from "react";
-
-type Todo = {
-  id: string;
-  text: string;
-};
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "@/app/db";
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const todos = useLiveQuery(() => db.todos.toArray());
   const [inputValue, setInputValue] = useState("");
   const formId = useId();
 
-  function handleAddTodo(event: React.FormEvent) {
+  async function handleAddTodo(event: React.FormEvent) {
     event.preventDefault();
     const trimmed = inputValue.trim();
     if (!trimmed) return;
 
-    setTodos((prev) => [...prev, { id: crypto.randomUUID(), text: trimmed }]);
+    await db.todos.add({ id: crypto.randomUUID(), text: trimmed });
     setInputValue("");
   }
 
-  function handleDeleteTodo(todoId: string) {
-    setTodos((prev) => prev.filter((todo) => todo.id !== todoId));
+  async function handleDeleteTodo(todoId: string) {
+    await db.todos.delete(todoId);
   }
 
   return (
@@ -48,7 +45,7 @@ export default function TodoList() {
         </button>
       </form>
 
-      {todos.length === 0 ? (
+      {!todos || todos.length === 0 ? (
         <p className="text-center text-sm text-foreground/40">
           No todos yet. Add one above!!
         </p>
