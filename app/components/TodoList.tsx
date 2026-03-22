@@ -50,7 +50,7 @@ export default function TodoList() {
 
       {todos.length === 0 ? (
         <p className="text-center text-sm text-foreground/40">
-          No todos yet. Add one above!
+          No todos yet. Add one above!!
         </p>
       ) : (
         <ul className="space-y-2">
