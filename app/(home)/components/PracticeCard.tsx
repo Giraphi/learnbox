@@ -12,19 +12,30 @@ function pickRandom(items: Vocabulary[]): Vocabulary | null {
 }
 
 export default function PracticeCard() {
-  const [seed, setSeed] = useState(0);
+  const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [seed, setSeed] = useState(0);
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
     []
   );
 
-  const current = vocabularies ? pickRandom(vocabularies) : null;
+  const isCurrentValid =
+    current !== null &&
+    vocabularies?.some((v) => v.id === current.id);
+
+  if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
+    setCurrent(pickRandom(vocabularies));
+  }
+  if (vocabularies && vocabularies.length === 0 && current !== null) {
+    setCurrent(null);
+  }
 
   function advance() {
-    setSeed((s) => s + 1);
+    setCurrent(null);
     setIsRevealed(false);
+    setSeed((s) => s + 1);
   }
 
   async function handlePass() {
@@ -57,40 +68,39 @@ export default function PracticeCard() {
         <p className="text-center text-2xl font-semibold tracking-tight">
           {current.german}
         </p>
-        {isRevealed && (
-          <p className="text-center text-base text-foreground/50">
-            {current.english}
-          </p>
-        )}
+        <p
+          className={`text-center text-base text-foreground/50 ${
+            isRevealed ? "visible" : "invisible"
+          }`}
+        >
+          {current.english}
+        </p>
       </div>
 
       <div className="flex justify-between">
         <button
           onClick={handleFail}
-          className="flex items-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 text-sm transition-colors hover:bg-red-500/10"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
           aria-label="Fail"
         >
-          <GiSkullCrack className="text-lg text-red-500" />
-          <span>Fail</span>
+          <GiSkullCrack className="text-xl text-red-500" />
         </button>
 
         <button
           onClick={() => setIsRevealed(true)}
           disabled={isRevealed}
-          className="flex items-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 text-sm transition-colors hover:bg-foreground/5 disabled:opacity-40"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
           aria-label="Reveal"
         >
-          <GiSheikahEye className="text-lg" />
-          <span>Reveal</span>
+          <GiSheikahEye className="text-xl" />
         </button>
 
         <button
           onClick={handlePass}
-          className="flex items-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 text-sm transition-colors hover:bg-emerald-500/10"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
           aria-label="Pass"
         >
-          <GiTrophyCup className="text-lg text-emerald-500" />
-          <span>Pass</span>
+          <GiTrophyCup className="text-xl text-emerald-500" />
         </button>
       </div>
     </div>
