@@ -9,3 +9,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Prefer inline callbacks over excessive function definitions
 
 If a function is used only once (e.g. as a callback) and is very short, e.g. only one line, prefer to just define it inline with arrow notation
+
+# Use pnpm if you install packages, NOT npm
