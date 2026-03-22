@@ -2,6 +2,7 @@
 
 import { useLiveQuery } from "dexie-react-hooks";
 import { useState } from "react";
+import { GiScrollQuill } from "react-icons/gi";
 import { db } from "@/app/db";
 import AddVocabularyDialog from "@/app/components/AddVocabularyDialog";
 
@@ -46,10 +47,10 @@ export default function VocabularyList() {
 
       <button
         onClick={() => setIsDialogOpen(true)}
-        className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background text-2xl font-light shadow-lg transition-opacity hover:opacity-80"
+        className="fixed bottom-22 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg transition-opacity hover:opacity-80"
         aria-label="Add vocabulary"
       >
-        +
+        <GiScrollQuill className="text-3xl -translate-x-px" />
       </button>
 
       <AddVocabularyDialog
