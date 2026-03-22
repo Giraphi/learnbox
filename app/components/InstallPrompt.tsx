@@ -34,38 +34,20 @@ function subscribeInstallPrompt(callback: () => void) {
   };
 }
 
-function getInstallPromptSnapshot() {
-  return deferredPrompt;
-}
-
 const EMPTY_SUBSCRIBE = () => () => {};
-
-function getIsIOS() {
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window)
-  );
-}
-
-function getIsStandalone() {
-  return window.matchMedia("(display-mode: standalone)").matches;
-}
 
 export default function InstallPrompt() {
   const installPrompt = useSyncExternalStore(
     subscribeInstallPrompt,
-    getInstallPromptSnapshot,
+    () => deferredPrompt,
     () => null
   );
-  const isIOS = useSyncExternalStore(EMPTY_SUBSCRIBE, getIsIOS, () => false);
-  const isStandalone = useSyncExternalStore(
+  const isIOS = useSyncExternalStore(
     EMPTY_SUBSCRIBE,
-    getIsStandalone,
+    () =>
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window),
     () => false
   );
-
-  if (isStandalone) {
-    return null;
-  }
 
   async function handleInstallClick() {
     if (!installPrompt) return;
@@ -83,9 +65,14 @@ export default function InstallPrompt() {
 
   return (
     <div>
-      <h3>Install App</h3>
+      <h3>Install the App on your device to get started</h3>
       {showInstallButton && (
-        <button onClick={handleInstallClick}>Add to Home Screen</button>
+        <button
+          onClick={handleInstallClick}
+          className="bg-blue-500 text-white p-2 rounded-md cursor-pointer"
+        >
+          Add to Home Screen
+        </button>
       )}
       {isIOS && (
         <p>
