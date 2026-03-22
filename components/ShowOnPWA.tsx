@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { useIsStandalone } from "@/app/hooks/useIsStandalone";
+import { useIsStandalone } from "@/hooks/useIsStandalone";
 
 type ShowOnPWAProps = {
   children: ReactNode;
