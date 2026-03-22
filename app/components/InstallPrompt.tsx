@@ -65,7 +65,9 @@ export default function InstallPrompt() {
 
   return (
     <div>
-      <h3>Install the App on your device to get started</h3>
+      <h3 className="text-lg font-bold pb-8 ">
+        Install the App on your phone to get started
+      </h3>
       {showInstallButton && (
         <button
           onClick={handleInstallClick}
@@ -75,19 +77,10 @@ export default function InstallPrompt() {
         </button>
       )}
       {isIOS && (
-        <p>
-          To install this app on your iOS device, tap the share button
-          <span role="img" aria-label="share icon">
-            {" "}
-            ⎋{" "}
-          </span>
-          and then &quot;Add to Home Screen&quot;
-          <span role="img" aria-label="plus icon">
-            {" "}
-            ➕{" "}
-          </span>
-          .
-        </p>
+        <ul className="list-disc list-inside">
+          <li>Tap the share button</li>
+          <li>Tap &quot;Add to Home Screen&quot;</li>
+        </ul>
       )}
     </div>
   );

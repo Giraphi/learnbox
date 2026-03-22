@@ -1,86 +1,28 @@
 "use client";
 
-import { useState, useSyncExternalStore, useId } from "react";
+import { useState, useId } from "react";
 
 type Todo = {
   id: string;
   text: string;
 };
 
-const STORAGE_KEY = "learnbox-todos";
-
-function getTodosFromStorage(): Todo[] {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return [];
-
-  try {
-    return JSON.parse(stored);
-  } catch {
-    return [];
-  }
-}
-
-function saveTodosToStorage(todos: Todo[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-  notifyListeners();
-}
-
-const listeners = new Set<() => void>();
-
-function notifyListeners() {
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(callback: () => void) {
-  listeners.add(callback);
-
-  function handleStorageEvent(event: StorageEvent) {
-    if (event.key === STORAGE_KEY) callback();
-  }
-  window.addEventListener("storage", handleStorageEvent);
-
-  return () => {
-    listeners.delete(callback);
-    window.removeEventListener("storage", handleStorageEvent);
-  };
-}
-
-let cachedSnapshot: Todo[] = [];
-let cachedRaw: string | null = null;
-
-function getSnapshot(): Todo[] {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    cachedSnapshot = raw ? JSON.parse(raw) : [];
-  }
-  return cachedSnapshot;
-}
-
-const SERVER_SNAPSHOT: Todo[] = [];
-
 export default function TodoList() {
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [inputValue, setInputValue] = useState("");
   const formId = useId();
-  const todos = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    () => SERVER_SNAPSHOT
-  );
 
   function handleAddTodo(event: React.FormEvent) {
     event.preventDefault();
     const trimmed = inputValue.trim();
     if (!trimmed) return;
 
-    const newTodo: Todo = { id: crypto.randomUUID(), text: trimmed };
-    saveTodosToStorage([...getTodosFromStorage(), newTodo]);
+    setTodos((prev) => [...prev, { id: crypto.randomUUID(), text: trimmed }]);
     setInputValue("");
   }
 
   function handleDeleteTodo(todoId: string) {
-    const updated = getTodosFromStorage().filter((todo) => todo.id !== todoId);
-    saveTodosToStorage(updated);
+    setTodos((prev) => prev.filter((todo) => todo.id !== todoId));
   }
 
   return (
