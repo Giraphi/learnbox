@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId, useRef, useCallback } from "react";
+import { useState, useId, useRef, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { db } from "@/app/db";
 import {
@@ -27,18 +27,17 @@ export default function AddVocabularyDialog({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const syncDialog = useCallback(
-    (node: HTMLDialogElement | null) => {
-      dialogRef.current = node;
-      if (!node) return;
-      if (isOpen && !node.open) {
-        node.show();
-        requestAnimationFrame(() => inputRef.current?.focus());
-      }
-      if (!isOpen && node.open) node.close();
-    },
-    [isOpen]
-  );
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) {
+      dialog.show();
+      inputRef.current?.focus();
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
 
   function handleClose() {
     setGerman("");
@@ -72,7 +71,7 @@ export default function AddVocabularyDialog({
 
   return (
     <dialog
-      ref={syncDialog}
+      ref={dialogRef}
       onClose={handleClose}
       className="fixed inset-0 bottom-16 z-40 m-0 h-auto w-full max-h-none max-w-none bg-neutral-950 text-foreground"
     >
@@ -81,7 +80,6 @@ export default function AddVocabularyDialog({
           <h2 className="text-lg font-semibold">Add Vocabulary</h2>
           <button
             type="button"
-            tabIndex={-1}
             onClick={handleClose}
             className="rounded-full p-1.5 transition-colors hover:bg-foreground/10"
             aria-label="Close"
