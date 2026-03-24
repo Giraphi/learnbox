@@ -17,3 +17,19 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.skeleton-reluctant {
+  opacity: 0;
+  animation:
+    skeleton-in 0.3s 0.5s forwards,
+    pulse 2s 0.8s infinite;
+}

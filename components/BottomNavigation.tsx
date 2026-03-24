@@ -24,7 +24,7 @@ export default function BottomNavigation() {
     },
     {
       href: "/box",
-      label: "Write",
+      label: "Vocabulary",
       icon: <BookCoverIcon className="size-6" />,
       activeIcon: <BookCoverIcon className="size-6" />,
     },

@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { GiSheikahEye, GiTrophyCup } from "react-icons/gi";
-import { ThumbsDown } from "lucide-react";
+import { GiCheckMark, GiSheikahEye, GiUncertainty } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
 import { generateExampleSentence } from "@/app/(home)/components/PracticeCard/actions";
-import Spinner from "@/components/Spinner";
+import Skeleton from "@/components/Skeleton";
 
-function pickRandom(items: Vocabulary[]): Vocabulary | null {
+function pickRandom(
+  items: Vocabulary[],
+  excludeId?: string
+): Vocabulary | null {
   if (items.length === 0) return null;
-  return items[Math.floor(Math.random() * items.length)];
+  const candidates =
+    excludeId !== undefined ? items.filter((v) => v.id !== excludeId) : items;
+  const pool = candidates.length > 0 ? candidates : items;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export default function PracticeCard() {
@@ -38,26 +43,28 @@ export default function PracticeCard() {
     setCurrent(null);
   }
 
-  const currentEnglish = current?.english;
+  // const currentEnglish = current?.english;
 
   useEffect(() => {
-    if (!currentEnglish) return;
+    if (!current?.english || !current?.german) return;
     let ignore = false;
-    generateExampleSentence(currentEnglish).then((result) => {
-      if (ignore) return;
+    generateExampleSentence(current?.english, current?.german).then(
+      (result) => {
+        if (ignore) return;
 
-      setExampleSentence({
-        censored: result.censored,
-        uncensored: result.uncensored,
-      });
-    });
+        setExampleSentence({
+          censored: result.censored,
+          uncensored: result.uncensored,
+        });
+      }
+    );
     return () => {
       ignore = true;
     };
-  }, [currentEnglish, seed]);
+  }, [current, seed]);
 
   function advance() {
-    setCurrent(null);
+    setCurrent(vocabularies ? pickRandom(vocabularies, current?.id) : null);
     setIsRevealed(false);
     setExampleSentence(null);
     setSeed((s) => s + 1);
@@ -92,7 +99,7 @@ export default function PracticeCard() {
       <p className="text-center text-2xl font-semibold tracking-tight">
         {current.german}
       </p>
-      <div className="flex min-h-5 items-center justify-center text-center text-sm italic text-foreground/70">
+      <div className="flex h-10 items-center justify-center text-center text-sm italic text-foreground/70">
         {exampleSentence ? (
           isRevealed ? (
             exampleSentence.uncensored
@@ -100,7 +107,10 @@ export default function PracticeCard() {
             exampleSentence.censored
           )
         ) : (
-          <Spinner size="14" />
+          <div className="flex w-full flex-col items-center gap-1.5">
+            <Skeleton className="h-3.5 w-4/5" />
+            <Skeleton className="h-3.5 w-3/5" />
+          </div>
         )}
       </div>
       <p
@@ -117,7 +127,7 @@ export default function PracticeCard() {
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
           aria-label="Fail"
         >
-          <ThumbsDown className="size-5 text-red-500" />
+          <GiUncertainty className="text-lg text-red-500" />
         </button>
 
         <button
@@ -134,7 +144,7 @@ export default function PracticeCard() {
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
           aria-label="Pass"
         >
-          <GiTrophyCup className="text-xl text-emerald-500" />
+          <GiCheckMark className="text-lg text-emerald-500" />
         </button>
       </div>
     </div>
