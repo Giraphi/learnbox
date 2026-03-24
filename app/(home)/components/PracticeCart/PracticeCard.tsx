@@ -18,7 +18,10 @@ export default function PracticeCard() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [seed, setSeed] = useState(0);
-  const [exampleSentence, setExampleSentence] = useState<string | null>(null);
+  const [exampleSentence, setExampleSentence] = useState<{
+    censored: string;
+    uncensored: string;
+  } | null>(null);
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
@@ -40,13 +43,13 @@ export default function PracticeCard() {
   useEffect(() => {
     if (!currentEnglish) return;
     let ignore = false;
-    generateExampleSentence(currentEnglish).then((sentence) => {
+    generateExampleSentence(currentEnglish).then((result) => {
       if (ignore) return;
-      const sanitized = sentence.replace(
-        new RegExp(currentEnglish, "gi"),
-        "_____"
-      );
-      setExampleSentence(sanitized);
+
+      setExampleSentence({
+        censored: result.censored,
+        uncensored: result.uncensored,
+      });
     });
     return () => {
       ignore = true;
@@ -90,7 +93,15 @@ export default function PracticeCard() {
         {current.german}
       </p>
       <div className="flex min-h-5 items-center justify-center text-center text-sm italic text-foreground/70">
-        {exampleSentence ? exampleSentence : <Spinner size="14" />}
+        {exampleSentence ? (
+          isRevealed ? (
+            exampleSentence.uncensored
+          ) : (
+            exampleSentence.censored
+          )
+        ) : (
+          <Spinner size="14" />
+        )}
       </div>
       <p
         className={`text-center text-base text-foreground/70 ${
