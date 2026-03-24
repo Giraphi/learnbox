@@ -62,6 +62,7 @@ export default function AddVocabularyDialog({
       english: translation.english,
       german: german.trim(),
       level: 1,
+      exampleSentences: translation.exampleSentences,
     });
     handleClose();
   }
@@ -134,9 +135,11 @@ export default function AddVocabularyDialog({
               className="rounded-lg border border-foreground/15 px-4 py-3 text-left transition-colors hover:bg-foreground/5"
             >
               <span className="text-sm font-medium">{translation.english}</span>
-              <span className="mt-0.5 block text-xs text-foreground/50">
-                {translation.exampleSentence}
-              </span>
+              {translation.exampleSentences[0] && (
+                <span className="mt-0.5 block text-xs text-foreground/50">
+                  {translation.exampleSentences[0]}
+                </span>
+              )}
             </button>
           ))}
         </div>

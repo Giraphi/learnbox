@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { GiCheckMark, GiSheikahEye, GiUncertainty } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import { generateExampleSentence } from "@/app/(home)/components/PracticeCard/actions";
-import Skeleton from "@/components/Skeleton";
 
 function pickRandom(
   items: Vocabulary[],
@@ -19,14 +17,22 @@ function pickRandom(
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+function pickRandomSentenceIndex(sentenceCount: number): number {
+  if (sentenceCount === 0) return -1;
+  return Math.floor(Math.random() * sentenceCount);
+}
+
+function censorWord(sentence: string, word: string): string {
+  return sentence.replace(
+    new RegExp(word, "gi"),
+    (match) => "_".repeat(Math.floor(match.length * 0.8 + 1))
+  );
+}
+
 export default function PracticeCard() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [seed, setSeed] = useState(0);
-  const [exampleSentence, setExampleSentence] = useState<{
-    censored: string;
-    uncensored: string;
-  } | null>(null);
+  const [sentenceIndex, setSentenceIndex] = useState(0);
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
@@ -37,37 +43,24 @@ export default function PracticeCard() {
     current !== null && vocabularies?.some((v) => v.id === current.id);
 
   if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
-    setCurrent(pickRandom(vocabularies));
+    const next = pickRandom(vocabularies);
+    setCurrent(next);
+    setSentenceIndex(pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0));
   }
   if (vocabularies && vocabularies.length === 0 && current !== null) {
     setCurrent(null);
   }
 
-  // const currentEnglish = current?.english;
-
-  useEffect(() => {
-    if (!current?.english || !current?.german) return;
-    let ignore = false;
-    generateExampleSentence(current?.english, current?.german).then(
-      (result) => {
-        if (ignore) return;
-
-        setExampleSentence({
-          censored: result.censored,
-          uncensored: result.uncensored,
-        });
-      }
-    );
-    return () => {
-      ignore = true;
-    };
-  }, [current, seed]);
+  const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
+  const censoredSentence = exampleSentence
+    ? censorWord(exampleSentence, current!.english)
+    : null;
 
   function advance() {
-    setCurrent(vocabularies ? pickRandom(vocabularies, current?.id) : null);
+    const next = vocabularies ? pickRandom(vocabularies, current?.id) : null;
+    setCurrent(next);
     setIsRevealed(false);
-    setExampleSentence(null);
-    setSeed((s) => s + 1);
+    setSentenceIndex(pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0));
   }
 
   async function handlePass() {
@@ -93,26 +86,17 @@ export default function PracticeCard() {
 
   return (
     <div
-      key={`${current.id}-${seed}`}
+      key={`${current.id}-${sentenceIndex}`}
       className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
     >
       <p className="text-center text-2xl font-semibold tracking-tight">
         {current.german}
       </p>
-      <div className="flex h-10 items-center justify-center text-center text-sm italic text-foreground/70">
-        {exampleSentence ? (
-          isRevealed ? (
-            exampleSentence.uncensored
-          ) : (
-            exampleSentence.censored
-          )
-        ) : (
-          <div className="flex w-full flex-col items-center gap-1.5">
-            <Skeleton className="h-3.5 w-4/5" />
-            <Skeleton className="h-3.5 w-3/5" />
-          </div>
-        )}
-      </div>
+      {exampleSentence && (
+        <p className="text-center text-sm italic text-foreground/70">
+          {isRevealed ? exampleSentence : censoredSentence}
+        </p>
+      )}
       <p
         className={`text-center text-base text-foreground/70 ${
           isRevealed ? "visible" : "invisible"
