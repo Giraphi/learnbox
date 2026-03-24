@@ -25,12 +25,16 @@ export default function AddVocabularyDialog({
   const [isTranslating, setIsTranslating] = useState(false);
   const germanId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const syncDialog = useCallback(
     (node: HTMLDialogElement | null) => {
       dialogRef.current = node;
       if (!node) return;
-      if (isOpen && !node.open) node.show();
+      if (isOpen && !node.open) {
+        node.show();
+        requestAnimationFrame(() => inputRef.current?.focus());
+      }
       if (!isOpen && node.open) node.close();
     },
     [isOpen]
@@ -92,12 +96,12 @@ export default function AddVocabularyDialog({
                 German
               </label>
               <input
+                ref={inputRef}
                 id={germanId}
                 type="text"
                 value={german}
                 onChange={(e) => setGerman(e.target.value)}
                 placeholder="e.g. Apfel"
-                autoFocus
                 className="rounded-lg border border-foreground/15 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-foreground/40 focus:border-foreground/40"
               />
             </div>

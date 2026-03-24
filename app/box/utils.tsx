@@ -24,11 +24,10 @@ export async function translateWord(
     output: Output.array({
       element: translationSchema,
     }),
-    prompt: `Translate the following German word to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance. For each translation, provide the English word and exactly 5 short, simple example sentences using that English word in a way that matches the German meaning. If the German word is misspelled or not a real word, return an empty array.\n\nGerman word: "${trimmed}"`,
+    prompt: `Translate the following German word to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word and exactly 5 short, simple example sentences using that English word in a way that matches the German meaning. If the German word is misspelled or not a real word, return an empty array.\n\nGerman word: "${trimmed}"`,
   });
 
   if (!output || output.length === 0) return { status: "no_translation" };
 
   return { status: "success", translations: output };
 }
-
