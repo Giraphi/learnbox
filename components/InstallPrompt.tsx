@@ -78,6 +78,7 @@ export default function InstallPrompt() {
       )}
       {isIOS && (
         <ul className="list-disc list-inside">
+          <li>In Safari, tap the three buttons in the bottom</li>
           <li>Tap the share button</li>
           <li>Tap &quot;Add to Home Screen&quot;</li>
         </ul>
