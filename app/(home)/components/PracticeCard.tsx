@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { GiSheikahEye, GiSkullCrack, GiTrophyCup } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
+import { generateExampleSentence } from "@/app/(home)/actions";
 
 function pickRandom(items: Vocabulary[]): Vocabulary | null {
   if (items.length === 0) return null;
@@ -15,6 +16,7 @@ export default function PracticeCard() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [seed, setSeed] = useState(0);
+  const [exampleSentence, setExampleSentence] = useState<string | null>(null);
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
@@ -22,8 +24,7 @@ export default function PracticeCard() {
   );
 
   const isCurrentValid =
-    current !== null &&
-    vocabularies?.some((v) => v.id === current.id);
+    current !== null && vocabularies?.some((v) => v.id === current.id);
 
   if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
     setCurrent(pickRandom(vocabularies));
@@ -32,9 +33,23 @@ export default function PracticeCard() {
     setCurrent(null);
   }
 
+  const currentEnglish = current?.english;
+
+  useEffect(() => {
+    if (!currentEnglish) return;
+    let ignore = false;
+    generateExampleSentence(currentEnglish).then((sentence) => {
+      if (!ignore) setExampleSentence(sentence);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [currentEnglish, seed]);
+
   function advance() {
     setCurrent(null);
     setIsRevealed(false);
+    setExampleSentence(null);
     setSeed((s) => s + 1);
   }
 
@@ -64,18 +79,19 @@ export default function PracticeCard() {
       key={`${current.id}-${seed}`}
       className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
     >
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-center text-2xl font-semibold tracking-tight">
-          {current.german}
-        </p>
-        <p
-          className={`text-center text-base text-foreground/50 ${
-            isRevealed ? "visible" : "invisible"
-          }`}
-        >
-          {current.english}
-        </p>
-      </div>
+      <p className="text-center text-2xl font-semibold tracking-tight">
+        {current.german}
+      </p>
+      <p className="text-center text-sm italic text-foreground/40">
+        {exampleSentence ?? "…"}
+      </p>
+      <p
+        className={`text-center text-base text-foreground/50 ${
+          isRevealed ? "visible" : "invisible"
+        }`}
+      >
+        {current.english}
+      </p>
 
       <div className="flex justify-between">
         <button

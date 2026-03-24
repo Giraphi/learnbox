@@ -2,6 +2,11 @@
 
 import { useRef, useState, useId, useEffect } from "react";
 import { db } from "@/app/db";
+import {
+  translateWord,
+  type Translation,
+  type TranslationResult,
+} from "@/app/box/utils";
 
 type AddVocabularyDialogProps = {
   isOpen: boolean;
@@ -12,10 +17,11 @@ export default function AddVocabularyDialog({
   isOpen,
   onClose,
 }: AddVocabularyDialogProps) {
-  const [english, setEnglish] = useState("");
   const [german, setGerman] = useState("");
+  const [translationResult, setTranslationResult] =
+    useState<TranslationResult | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const englishId = useId();
   const germanId = useId();
 
   useEffect(() => {
@@ -31,24 +37,31 @@ export default function AddVocabularyDialog({
 
   function handleClose() {
     dialogRef.current?.close();
-    setEnglish("");
     setGerman("");
+    setTranslationResult(null);
+    setIsTranslating(false);
     onClose();
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleTranslate(event: React.FormEvent) {
     event.preventDefault();
-    const trimmedEnglish = english.trim();
-    const trimmedGerman = german.trim();
-    if (!trimmedEnglish || !trimmedGerman) return;
+    if (!german.trim() || isTranslating) return;
 
+    setIsTranslating(true);
+    setTranslationResult(null);
+
+    const result = await translateWord(german);
+    setTranslationResult(result);
+    setIsTranslating(false);
+  }
+
+  async function handleAddTranslation(translation: Translation) {
     await db.vocabularies.add({
       id: crypto.randomUUID(),
-      english: trimmedEnglish,
-      german: trimmedGerman,
+      english: translation.english,
+      german: german.trim(),
       level: 1,
     });
-
     handleClose();
   }
 
@@ -59,7 +72,8 @@ export default function AddVocabularyDialog({
       className="w-full max-w-sm rounded-xl border border-foreground/15 bg-background p-6 text-foreground"
     >
       <h2 className="mb-4 text-lg font-semibold">Add Vocabulary</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+      <form onSubmit={handleTranslate} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={germanId} className="text-xs text-foreground/60">
             German
@@ -70,24 +84,12 @@ export default function AddVocabularyDialog({
             value={german}
             onChange={(e) => setGerman(e.target.value)}
             placeholder="e.g. Apfel"
-            className="rounded-lg border border-foreground/15 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-foreground/40 focus:border-foreground/40"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor={englishId} className="text-xs text-foreground/60">
-            English
-          </label>
-          <input
-            id={englishId}
-            type="text"
-            value={english}
-            onChange={(e) => setEnglish(e.target.value)}
-            placeholder="e.g. apple"
             autoFocus
             className="rounded-lg border border-foreground/15 bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-foreground/40 focus:border-foreground/40"
           />
         </div>
-        <div className="mt-2 flex gap-2">
+
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={handleClose}
@@ -97,13 +99,46 @@ export default function AddVocabularyDialog({
           </button>
           <button
             type="submit"
-            disabled={!english.trim() || !german.trim()}
+            disabled={!german.trim() || isTranslating}
             className="flex-1 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-80 disabled:opacity-40"
           >
-            Add
+            {isTranslating ? "Translating…" : "Translate"}
           </button>
         </div>
       </form>
+
+      {isTranslating && (
+        <p className="mt-4 text-center text-sm text-foreground/50 animate-pulse">
+          Looking up translations…
+        </p>
+      )}
+
+      {translationResult?.status === "no_translation" && (
+        <p className="mt-4 text-center text-sm text-foreground/50">
+          No translation found. Check the spelling and try again.
+        </p>
+      )}
+
+      {translationResult?.status === "success" && (
+        <div className="mt-4 flex flex-col gap-2">
+          <p className="text-xs text-foreground/60">
+            Pick a translation to add:
+          </p>
+          {translationResult.translations.map((translation) => (
+            <button
+              key={translation.english}
+              type="button"
+              onClick={() => handleAddTranslation(translation)}
+              className="rounded-lg border border-foreground/15 px-4 py-3 text-left transition-colors hover:bg-foreground/5"
+            >
+              <span className="text-sm font-medium">{translation.english}</span>
+              <span className="mt-0.5 block text-xs text-foreground/50">
+                {translation.exampleSentence}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </dialog>
   );
 }
