@@ -54,8 +54,6 @@ export default function PracticeCard() {
 
   const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
 
-  console.log(sentenceIndex);
-
   const censoredSentence = exampleSentence
     ? censorWord(exampleSentence, current!.english)
     : null;

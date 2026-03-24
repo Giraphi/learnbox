@@ -31,7 +31,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("asdf");
   return (
     <html
       lang="en"
