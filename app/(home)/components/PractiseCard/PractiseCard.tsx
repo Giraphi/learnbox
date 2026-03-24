@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { GiCheckMark, GiSheikahEye, GiUncertainty } from "react-icons/gi";
 import { db } from "@/app/db";
-import type { Vocabulary } from "@/app/db";
+import type { Vocabulary, LevelChange } from "@/app/db";
 
 function pickRandom(
   items: Vocabulary[],
@@ -22,9 +22,10 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
   return Math.floor(Math.random() * sentenceCount);
 }
 
-function hasLevelChangeToday(date: Date | undefined | null): boolean {
-  if (!date) return false;
+function hasLevelChangeToday(levelChange: LevelChange | undefined | null): boolean {
+  if (!levelChange) return false;
   const now = new Date();
+  const date = levelChange.date;
   return (
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
@@ -116,7 +117,7 @@ export default function PractiseCard() {
     if (!isFreePracticeMode) {
       await db.vocabularies.update(current.id, {
         level: current.level + 1,
-        lastLevelChange: new Date(),
+        lastLevelChange: { date: new Date(), change: "up" },
       });
     }
     advance();
@@ -128,7 +129,7 @@ export default function PractiseCard() {
       const newLevel = current.level >= 2 ? current.level - 1 : 1;
       await db.vocabularies.update(current.id, {
         level: newLevel,
-        lastLevelChange: new Date(),
+        lastLevelChange: { date: new Date(), change: "down" },
       });
     }
     advance();

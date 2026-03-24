@@ -34,7 +34,7 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     if (!vocabulary || vocabulary.level >= MAX_LEVEL) return;
     await db.vocabularies.update(id, {
       level: vocabulary.level + 1,
-      lastLevelChange: new Date(),
+      lastLevelChange: { date: new Date(), change: "up" },
     });
   }
 
@@ -42,14 +42,17 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     if (!vocabulary || vocabulary.level <= MIN_LEVEL) return;
     await db.vocabularies.update(id, {
       level: vocabulary.level - 1,
-      lastLevelChange: new Date(),
+      lastLevelChange: { date: new Date(), change: "down" },
     });
   }
 
   async function handleResetLevelChangeDate() {
+    if (!vocabulary) return;
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    await db.vocabularies.update(id, { lastLevelChange: yesterday });
+    await db.vocabularies.update(id, {
+      lastLevelChange: { date: yesterday, change: vocabulary.lastLevelChange.change },
+    });
   }
 
   async function handleDelete() {
@@ -102,11 +105,12 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
         </div>
         <p className="text-xs text-foreground/40">
           Last change:{" "}
-          {vocabulary.lastLevelChange.toLocaleString("de-DE", {
+          {vocabulary.lastLevelChange.date.toLocaleString("de-DE", {
             timeZone: "Europe/Berlin",
             dateStyle: "medium",
             timeStyle: "short",
-          })}
+          })}{" "}
+          ({vocabulary.lastLevelChange.change === "up" ? "↑" : "↓"})
         </p>
       </div>
 

@@ -1,11 +1,18 @@
 import Dexie, { type EntityTable } from "dexie";
 
+type LevelChangeDirection = "up" | "down" | "none";
+
+type LevelChange = {
+  date: Date;
+  change: LevelChangeDirection;
+};
+
 type Vocabulary = {
   id: string;
   english: string;
   german: string;
   level: number;
-  lastLevelChange: Date;
+  lastLevelChange: LevelChange;
   exampleSentences: string[];
 };
 
@@ -24,7 +31,7 @@ db.on("populate", (transaction) => {
       english: "stroller",
       german: "Kinderwagen",
       level: 1,
-      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      lastLevelChange: { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), change: "none" },
       exampleSentences: [
         "She pushed the stroller through the park.",
         "We need a new stroller for the baby.",
@@ -38,7 +45,7 @@ db.on("populate", (transaction) => {
       english: "reckless",
       german: "rücksichtslos",
       level: 1,
-      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      lastLevelChange: { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), change: "none" },
       exampleSentences: [
         "The reckless driver ignored the red light.",
         "It was reckless to swim in the stormy sea.",
@@ -52,7 +59,7 @@ db.on("populate", (transaction) => {
       english: "irresponsible",
       german: "unverantwortlich",
       level: 1,
-      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      lastLevelChange: { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), change: "none" },
       exampleSentences: [
         "It would be irresponsible to leave a child alone.",
         "His irresponsible spending left him in debt.",
@@ -66,7 +73,7 @@ db.on("populate", (transaction) => {
       english: "deliberate",
       german: "absichtlich",
       level: 1,
-      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      lastLevelChange: { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), change: "none" },
       exampleSentences: [
         "That was a deliberate attempt to mislead us.",
         "She made a deliberate choice to stay quiet.",
@@ -79,4 +86,4 @@ db.on("populate", (transaction) => {
 });
 
 export { db };
-export type { Vocabulary };
+export type { Vocabulary, LevelChange, LevelChangeDirection };
