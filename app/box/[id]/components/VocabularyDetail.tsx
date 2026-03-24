@@ -51,7 +51,10 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     await db.vocabularies.update(id, {
-      lastLevelChange: { date: yesterday, change: vocabulary.lastLevelChange.change },
+      lastLevelChange: {
+        date: yesterday,
+        change: vocabulary.lastLevelChange.change,
+      },
     });
   }
 
@@ -110,7 +113,7 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
             dateStyle: "medium",
             timeStyle: "short",
           })}{" "}
-          ({vocabulary.lastLevelChange.change === "up" ? "↑" : "↓"})
+          ({vocabulary.lastLevelChange.change})
         </p>
       </div>
 

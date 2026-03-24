@@ -22,8 +22,11 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
   return Math.floor(Math.random() * sentenceCount);
 }
 
-function hasLevelChangeToday(levelChange: LevelChange | undefined | null): boolean {
+function hasPractisedToday(
+  levelChange: LevelChange | undefined | null
+): boolean {
   if (!levelChange) return false;
+  if (levelChange.change === "none") return false;
   const now = new Date();
   const date = levelChange.date;
   return (
@@ -62,7 +65,7 @@ export default function PractiseCard() {
   );
 
   const unpractisedToday =
-    vocabularies?.filter((v) => !hasLevelChangeToday(v.lastLevelChange)) ?? [];
+    vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [];
 
   const isCurrentValid =
     current !== null && vocabularies?.some((v) => v.id === current.id);
