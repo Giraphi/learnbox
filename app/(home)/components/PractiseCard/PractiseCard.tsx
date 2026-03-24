@@ -22,13 +22,22 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
   return Math.floor(Math.random() * sentenceCount);
 }
 
+function isToday(date: Date): boolean {
+  const now = new Date();
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  );
+}
+
 function censorWord(sentence: string, word: string): string {
   return sentence.replace(new RegExp(word, "gi"), (match) =>
     "_".repeat(Math.floor(match.length * 0.8 + 1))
   );
 }
 
-export default function PracticeCard() {
+export default function PractiseCard() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [sentenceIndex, setSentenceIndex] = useState(0);
@@ -52,6 +61,9 @@ export default function PracticeCard() {
     setCurrent(null);
   }
 
+  const isDoneForToday =
+    current?.lastLevelChange != null && isToday(current.lastLevelChange);
+
   const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
 
   const censoredSentence = exampleSentence
@@ -69,14 +81,24 @@ export default function PracticeCard() {
 
   async function handlePass() {
     if (!current) return;
-    await db.vocabularies.update(current.id, { level: current.level + 1 });
+    if (!isDoneForToday) {
+      await db.vocabularies.update(current.id, {
+        level: current.level + 1,
+        lastLevelChange: new Date(),
+      });
+    }
     advance();
   }
 
   async function handleFail() {
     if (!current) return;
-    const newLevel = current.level >= 2 ? current.level - 1 : 1;
-    await db.vocabularies.update(current.id, { level: newLevel });
+    if (!isDoneForToday) {
+      const newLevel = current.level >= 2 ? current.level - 1 : 1;
+      await db.vocabularies.update(current.id, {
+        level: newLevel,
+        lastLevelChange: new Date(),
+      });
+    }
     advance();
   }
 
@@ -93,6 +115,11 @@ export default function PracticeCard() {
       key={`${current.id}-${sentenceIndex}`}
       className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
     >
+      {isDoneForToday && (
+        <p className="text-center text-xs font-medium text-emerald-500">
+          Done for today
+        </p>
+      )}
       <p className="text-center text-2xl font-semibold tracking-tight">
         {current.german}
       </p>

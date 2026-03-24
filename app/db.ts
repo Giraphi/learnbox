@@ -5,6 +5,7 @@ type Vocabulary = {
   english: string;
   german: string;
   level: number;
+  lastLevelChange: Date;
   exampleSentences: string[];
 };
 
@@ -23,6 +24,7 @@ db.on("populate", (transaction) => {
       english: "stroller",
       german: "Kinderwagen",
       level: 1,
+      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       exampleSentences: [
         "She pushed the stroller through the park.",
         "We need a new stroller for the baby.",
@@ -36,6 +38,7 @@ db.on("populate", (transaction) => {
       english: "reckless",
       german: "rücksichtslos",
       level: 1,
+      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       exampleSentences: [
         "The reckless driver ignored the red light.",
         "It was reckless to swim in the stormy sea.",
@@ -49,6 +52,7 @@ db.on("populate", (transaction) => {
       english: "irresponsible",
       german: "unverantwortlich",
       level: 1,
+      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       exampleSentences: [
         "It would be irresponsible to leave a child alone.",
         "His irresponsible spending left him in debt.",
@@ -62,6 +66,7 @@ db.on("populate", (transaction) => {
       english: "deliberate",
       german: "absichtlich",
       level: 1,
+      lastLevelChange: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       exampleSentences: [
         "That was a deliberate attempt to mislead us.",
         "She made a deliberate choice to stay quiet.",

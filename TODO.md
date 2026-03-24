@@ -6,12 +6,9 @@ Design:
 
 Functionality:
 
-- AI for translations
-- detail pages for each vocab (set level, show if trained today)
-- Example sentence on the card, sentence changes every time.
+- Explore mode: Shows advanced vocabs as practise cards. the ones we don't know are added to vocabulary
 
 Learning Algorithm:
 
-- Not the same word two times
 - Only one level change for a word per day. Iterate over the words (randomly with equal probability) that have no level-change for today
 - If all words have a level change for that day, switch to "free practise" (indicate this on the word card)

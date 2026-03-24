@@ -64,6 +64,7 @@ export default function AddVocabularyDialog({
       english: translation.english,
       german: german.trim(),
       level: 1,
+      lastLevelChange: new Date(),
       exampleSentences: translation.exampleSentences,
     });
     handleClose();

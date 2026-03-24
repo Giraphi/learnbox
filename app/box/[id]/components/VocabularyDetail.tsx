@@ -32,12 +32,18 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
 
   async function handleIncreaseLevel() {
     if (!vocabulary || vocabulary.level >= MAX_LEVEL) return;
-    await db.vocabularies.update(id, { level: vocabulary.level + 1 });
+    await db.vocabularies.update(id, {
+      level: vocabulary.level + 1,
+      lastLevelChange: new Date(),
+    });
   }
 
   async function handleDecreaseLevel() {
     if (!vocabulary || vocabulary.level <= MIN_LEVEL) return;
-    await db.vocabularies.update(id, { level: vocabulary.level - 1 });
+    await db.vocabularies.update(id, {
+      level: vocabulary.level - 1,
+      lastLevelChange: new Date(),
+    });
   }
 
   async function handleDelete() {
@@ -88,6 +94,14 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
             <ChevronUp className="size-5 text-emerald-500" />
           </button>
         </div>
+        <p className="text-xs text-foreground/40">
+          Last change:{" "}
+          {vocabulary.lastLevelChange.toLocaleString("de-DE", {
+            timeZone: "Europe/Berlin",
+            dateStyle: "medium",
+            timeStyle: "short",
+          })}
+        </p>
       </div>
 
       <button
