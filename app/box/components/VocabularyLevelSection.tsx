@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Triangle } from "lucide-react";
 import type { Vocabulary } from "@/app/db";
+import ChangeIcon from "@/app/box/components/ChangeIcon";
 
 type VocabularyLevelSectionProps = {
   level: number;
@@ -31,12 +31,10 @@ export default function VocabularyLevelSection({
                 className="group flex items-center justify-between rounded-lg border border-foreground/10 px-4 py-3 transition-colors hover:bg-foreground/5"
               >
                 <div className="flex items-center gap-4">
-                  {vocab.lastLevelChange.change === "up" && (
-                    <Triangle className="size-2 shrink-0 fill-green-500 text-green-500" />
-                  )}
-                  {vocab.lastLevelChange.change === "down" && (
-                    <Triangle className="size-2 shrink-0 rotate-180 fill-red-500 text-red-500" />
-                  )}
+                  <ChangeIcon
+                    lastLevelChange={vocab.lastLevelChange}
+                    className="-translate-y-0.5"
+                  />
                   <div className="flex flex-col gap-0.5">
                     <span className="text-sm font-medium">{vocab.english}</span>
                     <span className="text-xs text-foreground/50">

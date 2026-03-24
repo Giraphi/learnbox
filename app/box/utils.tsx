@@ -18,6 +18,7 @@ export async function translateWord(
 ): Promise<TranslationResult> {
   const trimmed = germanWord.trim();
   if (!trimmed) return { status: "no_translation" };
+  console.log("##### Calling Google Gemini API...");
 
   const { output } = await generateText({
     model: "google/gemini-2.5-flash-lite",

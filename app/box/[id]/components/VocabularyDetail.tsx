@@ -3,6 +3,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import ChangeIcon from "@/app/box/components/ChangeIcon";
 import { db } from "@/app/db";
 
 type VocabularyDetailProps = {
@@ -34,7 +35,7 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     if (!vocabulary || vocabulary.level >= MAX_LEVEL) return;
     await db.vocabularies.update(id, {
       level: vocabulary.level + 1,
-      lastLevelChange: { date: new Date(), change: "up" },
+      lastLevelChange: { date: new Date(), change: "none" },
     });
   }
 
@@ -42,7 +43,7 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     if (!vocabulary || vocabulary.level <= MIN_LEVEL) return;
     await db.vocabularies.update(id, {
       level: vocabulary.level - 1,
-      lastLevelChange: { date: new Date(), change: "down" },
+      lastLevelChange: { date: new Date(), change: "none" },
     });
   }
 
@@ -53,7 +54,7 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     await db.vocabularies.update(id, {
       lastLevelChange: {
         date: yesterday,
-        change: vocabulary.lastLevelChange.change,
+        change: "none",
       },
     });
   }
@@ -73,9 +74,12 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
       </button>
 
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {vocabulary.english}
-        </h1>
+        <div className="flex items-center gap-2">
+          <ChangeIcon lastLevelChange={vocabulary.lastLevelChange} />
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {vocabulary.english}
+          </h1>
+        </div>
         <p className="text-base text-foreground/50">{vocabulary.german}</p>
       </div>
 
