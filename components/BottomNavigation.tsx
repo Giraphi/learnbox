@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GiBrain } from "react-icons/gi";
 import BookCoverIcon from "@/components/BookCoverIcon";
+import NavLinkContent from "@/components/NavLinkContent";
 
 type NavItem = {
   href: string;
@@ -44,12 +45,14 @@ export default function BottomNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 transition-colors ${
+              className={`flex flex-col items-center gap-0.5 px-8 transition-colors h-full justify-center ${
                 active ? "text-foreground" : "text-foreground/40"
               }`}
             >
-              {active ? item.activeIcon : item.icon}
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <NavLinkContent className="flex flex-col items-center gap-0.5">
+                {active ? item.activeIcon : item.icon}
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </NavLinkContent>
             </Link>
           );
         })}
