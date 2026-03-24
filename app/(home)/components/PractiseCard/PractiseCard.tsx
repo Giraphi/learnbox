@@ -22,7 +22,8 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
   return Math.floor(Math.random() * sentenceCount);
 }
 
-function isToday(date: Date): boolean {
+function hasLevelChangeToday(date: Date | undefined | null): boolean {
+  if (!date) return false;
   const now = new Date();
   return (
     date.getFullYear() === now.getFullYear() &&
@@ -37,32 +38,46 @@ function censorWord(sentence: string, word: string): string {
   );
 }
 
+function setNextItem(
+  item: Vocabulary | null,
+  setCurrent: (v: Vocabulary | null) => void,
+  setSentenceIndex: (i: number) => void
+) {
+  setCurrent(item);
+  setSentenceIndex(
+    pickRandomSentenceIndex(item?.exampleSentences?.length ?? 0)
+  );
+}
+
 export default function PractiseCard() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [sentenceIndex, setSentenceIndex] = useState(0);
+  const [isFreePracticeMode, setIsFreePracticeMode] = useState(false);
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
     []
   );
 
+  const unpractisedToday =
+    vocabularies?.filter((v) => !hasLevelChangeToday(v.lastLevelChange)) ?? [];
+
   const isCurrentValid =
     current !== null && vocabularies?.some((v) => v.id === current.id);
 
   if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
-    const next = pickRandom(vocabularies);
-    setCurrent(next);
-    setSentenceIndex(
-      pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0)
-    );
+    if (!isFreePracticeMode && unpractisedToday.length > 0) {
+      setNextItem(pickRandom(unpractisedToday), setCurrent, setSentenceIndex);
+    } else {
+      if (!isFreePracticeMode) setIsFreePracticeMode(true);
+      setNextItem(pickRandom(vocabularies), setCurrent, setSentenceIndex);
+    }
   }
+
   if (vocabularies && vocabularies.length === 0 && current !== null) {
     setCurrent(null);
   }
-
-  const isDoneForToday =
-    current?.lastLevelChange != null && isToday(current.lastLevelChange);
 
   const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
 
@@ -71,17 +86,34 @@ export default function PractiseCard() {
     : null;
 
   function advance() {
-    const next = vocabularies ? pickRandom(vocabularies, current?.id) : null;
-    setCurrent(next);
-    setIsRevealed(false);
-    setSentenceIndex(
-      pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0)
+    if (!vocabularies) return;
+
+    // Exclude the current item — its lastLevelChange is stale in the snapshot
+    const remainingUnpractised = unpractisedToday.filter(
+      (v) => v.id !== current?.id
     );
+
+    if (!isFreePracticeMode && remainingUnpractised.length > 0) {
+      setNextItem(
+        pickRandom(remainingUnpractised),
+        setCurrent,
+        setSentenceIndex
+      );
+    } else {
+      if (!isFreePracticeMode) setIsFreePracticeMode(true);
+      setNextItem(
+        pickRandom(vocabularies, current?.id),
+        setCurrent,
+        setSentenceIndex
+      );
+    }
+
+    setIsRevealed(false);
   }
 
   async function handlePass() {
     if (!current) return;
-    if (!isDoneForToday) {
+    if (!isFreePracticeMode) {
       await db.vocabularies.update(current.id, {
         level: current.level + 1,
         lastLevelChange: new Date(),
@@ -92,7 +124,7 @@ export default function PractiseCard() {
 
   async function handleFail() {
     if (!current) return;
-    if (!isDoneForToday) {
+    if (!isFreePracticeMode) {
       const newLevel = current.level >= 2 ? current.level - 1 : 1;
       await db.vocabularies.update(current.id, {
         level: newLevel,
@@ -111,57 +143,59 @@ export default function PractiseCard() {
   }
 
   return (
-    <div
-      key={`${current.id}-${sentenceIndex}`}
-      className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
-    >
-      {isDoneForToday && (
-        <p className="text-center text-xs font-medium text-emerald-500">
-          Done for today
-        </p>
-      )}
-      <p className="text-center text-2xl font-semibold tracking-tight">
-        {current.german}
-      </p>
-      {exampleSentence && (
-        <p className="text-center text-sm italic text-foreground/70">
-          {isRevealed ? exampleSentence : censoredSentence}
-        </p>
-      )}
-      <p
-        className={`text-center text-base text-foreground/70 ${
-          isRevealed ? "visible" : "invisible"
-        }`}
+    <>
+      <div
+        key={`${current.id}-${sentenceIndex}`}
+        className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
       >
-        {current.english}
-      </p>
-
-      <div className="flex justify-between">
-        <button
-          onClick={handleFail}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
-          aria-label="Fail"
+        <p className="text-center text-2xl font-semibold tracking-tight">
+          {current.german}
+        </p>
+        {exampleSentence && (
+          <p className="text-center text-sm italic text-foreground/70">
+            {isRevealed ? exampleSentence : censoredSentence}
+          </p>
+        )}
+        <p
+          className={`text-center text-base text-foreground/70 ${
+            isRevealed ? "visible" : "invisible"
+          }`}
         >
-          <GiUncertainty className="text-lg text-red-500" />
-        </button>
+          {current.english}
+        </p>
 
-        <button
-          onClick={() => setIsRevealed(true)}
-          disabled={isRevealed}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
-          aria-label="Reveal"
-        >
-          <GiSheikahEye className="text-xl" />
-        </button>
+        <div className="flex justify-between">
+          <button
+            onClick={handleFail}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
+            aria-label="Fail"
+          >
+            <GiUncertainty className="text-lg text-red-500" />
+          </button>
 
-        <button
-          onClick={handlePass}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
-          aria-label="Pass"
-        >
-          <GiCheckMark className="text-lg text-emerald-500" />
-        </button>
+          <button
+            onClick={() => setIsRevealed(true)}
+            disabled={isRevealed}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
+            aria-label="Reveal"
+          >
+            <GiSheikahEye className="text-xl" />
+          </button>
+
+          <button
+            onClick={handlePass}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
+            aria-label="Pass"
+          >
+            <GiCheckMark className="text-lg text-emerald-500" />
+          </button>
+        </div>
       </div>
-    </div>
+      {isFreePracticeMode && (
+        <p className="text-center text-xs font-medium text-foreground/40 pt-8">
+          Done for today — levels won&apos;t change
+        </p>
+      )}
+    </>
   );
 }

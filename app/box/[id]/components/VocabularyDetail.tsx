@@ -46,6 +46,12 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
     });
   }
 
+  async function handleResetLevelChangeDate() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    await db.vocabularies.update(id, { lastLevelChange: yesterday });
+  }
+
   async function handleDelete() {
     await db.vocabularies.delete(id);
     router.push("/box");
@@ -104,12 +110,20 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
         </p>
       </div>
 
-      <button
-        onClick={handleDelete}
-        className="self-start rounded-lg px-4 py-2 text-sm text-red-500 transition-colors hover:bg-red-500/10"
-      >
-        Delete entry
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={handleResetLevelChangeDate}
+          className="rounded-lg px-4 py-2 text-sm text-foreground/50 transition-colors hover:bg-foreground/5"
+        >
+          Reset level change date
+        </button>
+        <button
+          onClick={handleDelete}
+          className="rounded-lg px-4 py-2 text-sm text-red-500 transition-colors hover:bg-red-500/10"
+        >
+          Delete entry
+        </button>
+      </div>
     </div>
   );
 }
