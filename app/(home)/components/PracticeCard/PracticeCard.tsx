@@ -6,7 +6,7 @@ import { GiSheikahEye, GiTrophyCup } from "react-icons/gi";
 import { ThumbsDown } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import { generateExampleSentence } from "@/app/(home)/components/PracticeCart/actions";
+import { generateExampleSentence } from "@/app/(home)/components/PracticeCard/actions";
 import Spinner from "@/components/Spinner";
 
 function pickRandom(items: Vocabulary[]): Vocabulary | null {

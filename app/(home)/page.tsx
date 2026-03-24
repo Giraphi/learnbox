@@ -1,4 +1,4 @@
-import PracticeCard from "@/app/(home)/components/PracticeCart/PracticeCard";
+import PracticeCard from "@/app/(home)/components/PracticeCard/PracticeCard";
 
 export default function PractisePage() {
   return (

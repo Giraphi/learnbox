@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GiBrain } from "react-icons/gi";
-import ChestIcon from "@/components/ChestIcon";
+import BookCoverIcon from "@/components/BookCoverIcon";
 
 type NavItem = {
   href: string;
@@ -24,9 +24,9 @@ export default function BottomNavigation() {
     },
     {
       href: "/box",
-      label: "Box",
-      icon: <ChestIcon className="size-6" />,
-      activeIcon: <ChestIcon className="size-6" />,
+      label: "Write",
+      icon: <BookCoverIcon className="size-6" />,
+      activeIcon: <BookCoverIcon className="size-6" />,
     },
   ];
 
