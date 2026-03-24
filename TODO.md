@@ -3,6 +3,7 @@ Design:
 - Excessive game Icons is cringe?
 - think about general design intention: 8bit game or "cool" design?
 - Animation when we tap a word
+- The "____" looks shit. maybe we add a little svg illustration?
 
 Functionality:
 
