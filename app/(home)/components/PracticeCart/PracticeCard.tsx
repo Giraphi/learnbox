@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { GiSheikahEye, GiSkullCrack, GiTrophyCup } from "react-icons/gi";
+import { GiSheikahEye, GiTrophyCup } from "react-icons/gi";
+import { ThumbsDown } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import { generateExampleSentence } from "@/app/(home)/actions";
+import { generateExampleSentence } from "@/app/(home)/components/PracticeCart/actions";
+import Spinner from "@/components/Spinner";
 
 function pickRandom(items: Vocabulary[]): Vocabulary | null {
   if (items.length === 0) return null;
@@ -39,7 +41,12 @@ export default function PracticeCard() {
     if (!currentEnglish) return;
     let ignore = false;
     generateExampleSentence(currentEnglish).then((sentence) => {
-      if (!ignore) setExampleSentence(sentence);
+      if (ignore) return;
+      const sanitized = sentence.replace(
+        new RegExp(currentEnglish, "gi"),
+        "_____"
+      );
+      setExampleSentence(sanitized);
     });
     return () => {
       ignore = true;
@@ -82,11 +89,11 @@ export default function PracticeCard() {
       <p className="text-center text-2xl font-semibold tracking-tight">
         {current.german}
       </p>
-      <p className="text-center text-sm italic text-foreground/40">
-        {exampleSentence ?? "…"}
-      </p>
+      <div className="flex min-h-5 items-center justify-center text-center text-sm italic text-foreground/70">
+        {exampleSentence ? exampleSentence : <Spinner size="14" />}
+      </div>
       <p
-        className={`text-center text-base text-foreground/50 ${
+        className={`text-center text-base text-foreground/70 ${
           isRevealed ? "visible" : "invisible"
         }`}
       >
@@ -99,7 +106,7 @@ export default function PracticeCard() {
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
           aria-label="Fail"
         >
-          <GiSkullCrack className="text-xl text-red-500" />
+          <ThumbsDown className="size-5 text-red-500" />
         </button>
 
         <button

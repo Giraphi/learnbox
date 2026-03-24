@@ -7,6 +7,7 @@ import {
   type Translation,
   type TranslationResult,
 } from "@/app/box/utils";
+import Spinner from "@/components/Spinner";
 
 type AddVocabularyDialogProps = {
   isOpen: boolean;
@@ -108,9 +109,10 @@ export default function AddVocabularyDialog({
       </form>
 
       {isTranslating && (
-        <p className="mt-4 text-center text-sm text-foreground/50 animate-pulse">
-          Looking up translations…
-        </p>
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-foreground/50">
+          <Spinner size="14" />
+          <span>Looking up translations…</span>
+        </div>
       )}
 
       {translationResult?.status === "no_translation" && (
