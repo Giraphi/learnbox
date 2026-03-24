@@ -81,6 +81,7 @@ export default function AddVocabularyDialog({
           <h2 className="text-lg font-semibold">Add Vocabulary</h2>
           <button
             type="button"
+            tabIndex={-1}
             onClick={handleClose}
             className="rounded-full p-1.5 transition-colors hover:bg-foreground/10"
             aria-label="Close"
