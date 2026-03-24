@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { GiScrollQuill } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import AddVocabularyDialog from "@/app/box/components/AddVocabularyDialog";
+import AddVocabularyDrawer from "@/app/box/components/AddVocabularyDrawer";
 import VocabularyLevelSection from "@/app/box/components/VocabularyLevelSection";
 
 const LEVELS = [1, 2, 3, 4, 5] as const;
@@ -14,7 +14,7 @@ export default function VocabularyList() {
   const vocabularies = useLiveQuery(() =>
     db.vocabularies.where("level").belowOrEqual(5).sortBy("level")
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const vocabulariesByLevel = useMemo(() => {
     if (!vocabularies) return null;
@@ -48,16 +48,16 @@ export default function VocabularyList() {
       )}
 
       <button
-        onClick={() => setIsDialogOpen(true)}
+        onClick={() => setIsDrawerOpen(true)}
         className="fixed bottom-22 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-lg transition-opacity hover:opacity-80"
         aria-label="Add vocabulary"
       >
         <GiScrollQuill className="text-3xl -translate-x-px" />
       </button>
 
-      <AddVocabularyDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+      <AddVocabularyDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
       />
     </div>
   );

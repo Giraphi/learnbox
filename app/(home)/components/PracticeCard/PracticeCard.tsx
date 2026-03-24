@@ -23,9 +23,8 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
 }
 
 function censorWord(sentence: string, word: string): string {
-  return sentence.replace(
-    new RegExp(word, "gi"),
-    (match) => "_".repeat(Math.floor(match.length * 0.8 + 1))
+  return sentence.replace(new RegExp(word, "gi"), (match) =>
+    "_".repeat(Math.floor(match.length * 0.8 + 1))
   );
 }
 
@@ -45,13 +44,18 @@ export default function PracticeCard() {
   if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
     const next = pickRandom(vocabularies);
     setCurrent(next);
-    setSentenceIndex(pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0));
+    setSentenceIndex(
+      pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0)
+    );
   }
   if (vocabularies && vocabularies.length === 0 && current !== null) {
     setCurrent(null);
   }
 
   const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
+
+  console.log(sentenceIndex);
+
   const censoredSentence = exampleSentence
     ? censorWord(exampleSentence, current!.english)
     : null;
@@ -60,7 +64,9 @@ export default function PracticeCard() {
     const next = vocabularies ? pickRandom(vocabularies, current?.id) : null;
     setCurrent(next);
     setIsRevealed(false);
-    setSentenceIndex(pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0));
+    setSentenceIndex(
+      pickRandomSentenceIndex(next?.exampleSentences?.length ?? 0)
+    );
   }
 
   async function handlePass() {

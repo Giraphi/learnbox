@@ -31,6 +31,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("asdf");
   return (
     <html
       lang="en"
@@ -38,7 +39,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ShowOnPWA fallback={<InstallPrompt />}>
-          <main className="flex flex-1 flex-col">{children}</main>
+          <main className="flex flex-1 flex-col pb-16">{children}</main>
           <BottomNavigation />
         </ShowOnPWA>
       </body>
