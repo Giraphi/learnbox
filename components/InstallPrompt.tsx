@@ -64,7 +64,7 @@ export default function InstallPrompt() {
   const showInstallButton = installPrompt !== null;
 
   return (
-    <div>
+    <div className="p-8">
       <h3 className="text-lg font-bold pb-8 ">
         Install the App on your phone to get started
       </h3>
