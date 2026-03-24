@@ -30,7 +30,7 @@ export default function AddVocabularyDialog({
     (node: HTMLDialogElement | null) => {
       dialogRef.current = node;
       if (!node) return;
-      if (isOpen && !node.open) node.showModal();
+      if (isOpen && !node.open) node.show();
       if (!isOpen && node.open) node.close();
     },
     [isOpen]
@@ -70,7 +70,7 @@ export default function AddVocabularyDialog({
     <dialog
       ref={syncDialog}
       onClose={handleClose}
-      className="fixed inset-0 m-0 h-full w-full max-h-none max-w-none bg-neutral-950 text-foreground backdrop:bg-black/80"
+      className="fixed inset-0 bottom-16 z-40 m-0 h-auto w-full max-h-none max-w-none bg-neutral-950 text-foreground"
     >
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between p-4">
@@ -88,10 +88,7 @@ export default function AddVocabularyDialog({
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           <form onSubmit={handleTranslate} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor={germanId}
-                className="text-xs text-foreground/60"
-              >
+              <label htmlFor={germanId} className="text-xs text-foreground/60">
                 German
               </label>
               <input
