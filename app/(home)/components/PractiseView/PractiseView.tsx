@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Check, Eye, PartyPopper, XCircle } from "lucide-react";
+import { PartyPopper } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary, LevelChange } from "@/app/db";
+import PractiseCard from "@/app/(home)/components/PractiseView/PractiseCard";
 
 function pickRandom(
   items: Vocabulary[],
@@ -36,12 +37,6 @@ function hasPractisedToday(
   );
 }
 
-function censorWord(sentence: string, word: string): string {
-  return sentence.replace(new RegExp(word, "gi"), (match) =>
-    "_".repeat(Math.floor(match.length * 0.8 + 1)),
-  );
-}
-
 function setNextItem(
   item: Vocabulary | null,
   setCurrent: (v: Vocabulary | null) => void,
@@ -53,9 +48,8 @@ function setNextItem(
   );
 }
 
-export default function PractiseCard() {
+export default function PractiseView() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const [isFreePracticeMode, setIsFreePracticeMode] = useState(false);
   const [includeCompleted, setIncludeCompleted] = useState(true);
@@ -65,13 +59,12 @@ export default function PractiseCard() {
     [],
   );
 
-  const allVocabularies = useLiveQuery(
-    () => db.vocabularies.toArray(),
-    [],
-  );
+  const allVocabularies = useLiveQuery(() => db.vocabularies.toArray(), []);
 
   const vocabularies = activeVocabularies;
-  const freePracticePool = includeCompleted ? allVocabularies : activeVocabularies;
+  const freePracticePool = includeCompleted
+    ? allVocabularies
+    : activeVocabularies;
 
   const unpractisedToday =
     vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [];
@@ -92,12 +85,6 @@ export default function PractiseCard() {
   if (currentPool && currentPool.length === 0 && current !== null) {
     setCurrent(null);
   }
-
-  const exampleSentence = current?.exampleSentences?.[sentenceIndex] ?? null;
-
-  const censoredSentence = exampleSentence
-    ? censorWord(exampleSentence, current!.english)
-    : null;
 
   function advance() {
     if (!currentPool) return;
@@ -122,7 +109,6 @@ export default function PractiseCard() {
       );
     }
 
-    setIsRevealed(false);
   }
 
   async function handlePass() {
@@ -158,53 +144,12 @@ export default function PractiseCard() {
 
   return (
     <>
-      <div
-        key={`${current.id}-${sentenceIndex}`}
-        className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
-      >
-        <p className="text-center text-2xl font-semibold tracking-tight">
-          {current.german}
-        </p>
-        {exampleSentence && (
-          <p className="text-center text-sm italic text-foreground/70">
-            {isRevealed ? exampleSentence : censoredSentence}
-          </p>
-        )}
-        <p
-          className={`text-center text-base text-foreground/70 ${
-            isRevealed ? "visible" : "invisible"
-          }`}
-        >
-          {current.english}
-        </p>
-
-        <div className="flex justify-between">
-          <button
-            onClick={handleFail}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
-            aria-label="Fail"
-          >
-            <XCircle className="h-5 w-5 text-red-500" strokeWidth={2} />
-          </button>
-
-          <button
-            onClick={() => setIsRevealed(true)}
-            disabled={isRevealed}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
-            aria-label="Reveal"
-          >
-            <Eye className="h-5 w-5" strokeWidth={2} />
-          </button>
-
-          <button
-            onClick={handlePass}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
-            aria-label="Pass"
-          >
-            <Check className="h-5 w-5 text-emerald-500" strokeWidth={2} />
-          </button>
-        </div>
-      </div>
+      <PractiseCard
+        vocabulary={current}
+        sentenceIndex={sentenceIndex}
+        onPass={handlePass}
+        onFail={handleFail}
+      />
       {isFreePracticeMode && (
         <div className="flex flex-col items-center gap-4 pt-8">
           <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
