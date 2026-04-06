@@ -4,7 +4,7 @@ import { useState, useId, useRef, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import { db } from "@/app/db";
 import {
-  translateWord,
+  translateGerman,
   type Translation,
   type TranslationResult,
 } from "@/app/vocabulary/utils";
@@ -53,7 +53,7 @@ export default function AddVocabularyDialog({
     setIsTranslating(true);
     setTranslationResult(null);
 
-    const result = await translateWord(german);
+    const result = await translateGerman(german);
     setTranslationResult(result);
     setIsTranslating(false);
   }
