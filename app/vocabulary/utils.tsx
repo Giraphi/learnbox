@@ -4,33 +4,32 @@ import { generateText, Output } from "ai";
 import dedent from "dedent";
 import { z } from "zod/v4";
 
-const translationToEnglishSchema = z.object({
-  english: z.string(),
+const translationSchema = z.object({
+  candidate: z.string(),
   exampleSentences: z.array(z.string()),
 });
 
-export type TranslationToEnglish = z.infer<typeof translationToEnglishSchema>;
+export type Translation = z.infer<typeof translationSchema>;
 
-export type TranslationToEnglishResult =
-  | { status: "success"; translations: TranslationToEnglish[] }
+export type TranslationResult =
+  | { status: "success"; translations: Translation[] }
   | { status: "no_translation" };
 
 export async function translateToEnglish(
   germanWord: string,
-): Promise<TranslationToEnglishResult> {
+): Promise<TranslationResult> {
   const trimmed = germanWord.trim();
   if (!trimmed) return { status: "no_translation" };
-  console.log("##### Calling Google Gemini API...");
 
   const { output } = await generateText({
     model: "openai/gpt-4.1-mini",
     output: Output.array({
-      element: translationToEnglishSchema,
+      element: translationSchema,
     }),
     prompt: dedent`   
     You are a translation helper you receive the following English word or phrase: "${trimmed}". 
 
-    Translate the input German word or phrase to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word or phrase and exactly 10 short, simple example sentences using that English word or phrase in a way that matches the German meaning. Try to make the sentences as diverse as possible. If the German input is misspelled or not a real word or phrase, return an empty array."
+    Translate the input German word or phrase to English. In case there are multiple possible translations, return up to 3 translation candidates sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation candidate, also provide exactly 10 short, simple example sentences using that English word or phrase in a way that matches the German meaning. Try to make the sentences as diverse as possible. If the German input is misspelled or not a real word or phrase, return an empty array."
     `,
   });
 
@@ -39,39 +38,27 @@ export async function translateToEnglish(
   return { status: "success", translations: output };
 }
 
-const translationToGermanSchema = z.object({
-  germanSuggestions: z.array(z.string()),
-  englishExampleSentences: z.array(z.string()),
-});
-
-export type TranslationToGerman = z.infer<typeof translationToGermanSchema>;
-
-export type TranslationToGermanResult =
-  | { status: "success"; output: TranslationToGerman }
-  | { status: "no_translation" };
-
 export async function translateToGerman(
   englishWord: string,
-): Promise<TranslationToGermanResult> {
+): Promise<TranslationResult> {
   const trimmed = englishWord.trim();
   if (!trimmed) return { status: "no_translation" };
-  console.log("##### Calling Google Gemini API...");
+
+  // EN -> GER
 
   const { output } = await generateText({
     model: "openai/gpt-4.1-mini",
-    output: Output.object({
-      schema: translationToGermanSchema,
+    output: Output.array({
+      element: translationSchema,
     }),
     prompt: dedent`
     You are a translation helper you receive the following English word or phrase: "${trimmed}". 
 
-    Translate the input English word or phrase to German. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. 
-
-    Additionally, for the English word or phrase, provide exactly 10 short, simple example sentences using that English word or phrase in a way that matches the German meaning. Try to make the sentences as diverse as possible. If the English word or phrase is misspelled or not a real word or phrase, return an empty array.   
+    Translate the input English word or phrase to German. In case there are multiple possible translations, return up to 3 translation candidats sorted by relevance, but stick to one translation if that one is really matching the English meaning. For each translation candidate, also provide exactly 10 short, simple example sentences in English using the english input phrase such that it could be translated to the German candidate. Try to make the sentences as diverse as possible. If the English input is misspelled or not a real word or phrase, return an empty array."
  `,
   });
 
   if (!output) return { status: "no_translation" };
 
-  return { status: "success", output };
+  return { status: "success", translations: output };
 }

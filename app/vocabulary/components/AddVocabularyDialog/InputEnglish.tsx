@@ -4,7 +4,8 @@ import { useState, useId } from "react";
 import { db } from "@/app/db";
 import {
   translateToGerman,
-  type TranslationToGermanResult,
+  type Translation,
+  type TranslationResult,
 } from "@/app/vocabulary/utils";
 import Spinner from "@/components/Spinner";
 
@@ -16,7 +17,7 @@ type InputEnglishProps = {
 export default function InputEnglish({ onAdd, inputRef }: InputEnglishProps) {
   const [english, setEnglish] = useState("");
   const [translationResult, setTranslationResult] =
-    useState<TranslationToGermanResult | null>(null);
+    useState<TranslationResult | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const englishId = useId();
 
@@ -32,16 +33,14 @@ export default function InputEnglish({ onAdd, inputRef }: InputEnglishProps) {
     setIsTranslating(false);
   }
 
-  async function handleSelectGerman(germanWord: string) {
-    if (!translationResult || translationResult.status !== "success") return;
-
+  async function handleAddTranslation(translation: Translation) {
     await db.vocabularies.add({
       id: crypto.randomUUID(),
       english: english.trim(),
-      german: germanWord,
+      german: translation.candidate,
       level: 1,
       lastLevelChange: { date: new Date(), change: "none" },
-      exampleSentences: translationResult.output.englishExampleSentences,
+      exampleSentences: translation.exampleSentences,
     });
     onAdd();
   }
@@ -86,40 +85,26 @@ export default function InputEnglish({ onAdd, inputRef }: InputEnglishProps) {
         </p>
       )}
 
-      {translationResult?.status === "success" &&
-        translationResult.output.englishExampleSentences.length > 0 && (
-          <div className="flex flex-col gap-1.5 rounded-lg border border-foreground/10 px-3 py-2.5 mt-4">
-            <p className="text-xs font-medium text-foreground/60">
-              Example sentences
-            </p>
-            <ul className="flex list-inside list-disc flex-col gap-1">
-              {translationResult.output.englishExampleSentences
-                .slice(0, 3)
-                .map((sentence, sentenceIndex) => (
-                  <li
-                    key={sentenceIndex}
-                    className="text-xs leading-relaxed text-foreground/50"
-                  >
-                    {sentence}
-                  </li>
-                ))}
-            </ul>
-          </div>
-        )}
-
       {translationResult?.status === "success" && (
         <div className="mt-4 flex flex-col gap-2">
           <p className="text-xs text-foreground/60">
-            Pick a German translation to add:
+            Pick a translation to add:
           </p>
-          {translationResult.output.germanSuggestions.map((germanWord) => (
+          {translationResult.translations.map((translation) => (
             <button
-              key={germanWord}
+              key={translation.candidate}
               type="button"
-              onClick={() => handleSelectGerman(germanWord)}
-              className="rounded-lg border border-foreground/15 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-foreground/5"
+              onClick={() => handleAddTranslation(translation)}
+              className="rounded-lg border border-foreground/15 px-4 py-3 text-left transition-colors hover:bg-foreground/5"
             >
-              {germanWord}
+              <span className="text-sm font-medium">
+                {translation.candidate}
+              </span>
+              {translation.exampleSentences[0] && (
+                <span className="mt-0.5 block text-xs text-foreground/50">
+                  {translation.exampleSentences[0]}
+                </span>
+              )}
             </button>
           ))}
         </div>

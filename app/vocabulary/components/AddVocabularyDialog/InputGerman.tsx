@@ -4,8 +4,8 @@ import { useState, useId } from "react";
 import { db } from "@/app/db";
 import {
   translateToEnglish,
-  type TranslationToEnglish,
-  type TranslationToEnglishResult,
+  type Translation,
+  type TranslationResult,
 } from "@/app/vocabulary/utils";
 import Spinner from "@/components/Spinner";
 
@@ -17,7 +17,7 @@ type InputGermanProps = {
 export default function InputGerman({ onAdd, inputRef }: InputGermanProps) {
   const [german, setGerman] = useState("");
   const [translationResult, setTranslationResult] =
-    useState<TranslationToEnglishResult | null>(null);
+    useState<TranslationResult | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const germanId = useId();
 
@@ -33,10 +33,10 @@ export default function InputGerman({ onAdd, inputRef }: InputGermanProps) {
     setIsTranslating(false);
   }
 
-  async function handleAddTranslation(translation: TranslationToEnglish) {
+  async function handleAddTranslation(translation: Translation) {
     await db.vocabularies.add({
       id: crypto.randomUUID(),
-      english: translation.english,
+      english: translation.candidate,
       german: german.trim(),
       level: 1,
       lastLevelChange: { date: new Date(), change: "none" },
@@ -92,13 +92,13 @@ export default function InputGerman({ onAdd, inputRef }: InputGermanProps) {
           </p>
           {translationResult.translations.map((translation) => (
             <button
-              key={translation.english}
+              key={translation.candidate}
               type="button"
               onClick={() => handleAddTranslation(translation)}
               className="rounded-lg border border-foreground/15 px-4 py-3 text-left transition-colors hover:bg-foreground/5"
             >
               <span className="text-sm font-medium">
-                {translation.english}
+                {translation.candidate}
               </span>
               {translation.exampleSentences[0] && (
                 <span className="mt-0.5 block text-xs text-foreground/50">
