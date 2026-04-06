@@ -35,7 +35,7 @@ export default function PractiseCard({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: -8 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
+      className="flex w-full max-w-sm flex-col gap-2 rounded-2xl border border-foreground/15 bg-foreground/3 p-6 min-h-[260px] justify-between"
     >
       <p className="text-center text-2xl font-semibold tracking-tight">
         {vocabulary.german}
@@ -53,7 +53,7 @@ export default function PractiseCard({
         {vocabulary.english}
       </p>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between justify-self-end">
         <button
           onClick={onFail}
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
