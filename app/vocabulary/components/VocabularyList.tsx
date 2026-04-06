@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import { GiScrollQuill } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import AddVocabularyDialog from "@/app/box/components/AddVocabularyDialog";
-import VocabularyLevelSection from "@/app/box/components/VocabularyLevelSection";
+import AddVocabularyDialog from "@/app/vocabulary/components/AddVocabularyDialog";
+import VocabularyLevelSection from "@/app/vocabulary/components/VocabularyLevelSection";
 
 const LEVELS = [1, 2, 3, 4, 5] as const;
 

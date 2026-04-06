@@ -1,4 +1,4 @@
-import VocabularyList from "@/app/box/components/VocabularyList";
+import VocabularyList from "@/app/vocabulary/components/VocabularyList";
 
 export default function BoxPage() {
   return (

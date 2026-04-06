@@ -7,7 +7,7 @@ import {
   translateWord,
   type Translation,
   type TranslationResult,
-} from "@/app/box/utils";
+} from "@/app/vocabulary/utils";
 import Spinner from "@/components/Spinner";
 
 type AddVocabularyDialogProps = {

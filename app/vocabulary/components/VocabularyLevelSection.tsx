@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Vocabulary } from "@/app/db";
-import ChangeIcon from "@/app/box/components/ChangeIcon";
+import ChangeIcon from "@/app/vocabulary/components/ChangeIcon";
 
 type VocabularyLevelSectionProps = {
   level: number;

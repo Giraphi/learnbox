@@ -3,7 +3,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import ChangeIcon from "@/app/box/components/ChangeIcon";
+import ChangeIcon from "@/app/vocabulary/components/ChangeIcon";
 import { db } from "@/app/db";
 
 type VocabularyDetailProps = {

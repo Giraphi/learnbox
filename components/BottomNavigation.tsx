@@ -23,7 +23,7 @@ export default function BottomNavigation() {
       activeIcon: <GiBrain className="size-6" />,
     },
     {
-      href: "/box",
+      href: "/vocabulary",
       label: "Vocabulary",
       icon: <BookCoverIcon className="size-6" />,
       activeIcon: <BookCoverIcon className="size-6" />,

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { GiCheckMark, GiSheikahEye, GiUncertainty } from "react-icons/gi";
+import { Check, Eye, XCircle } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary, LevelChange } from "@/app/db";
 
@@ -174,7 +174,7 @@ export default function PractiseCard() {
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
             aria-label="Fail"
           >
-            <GiUncertainty className="text-lg text-red-500" />
+            <XCircle className="h-5 w-5 text-red-500" strokeWidth={2} />
           </button>
 
           <button
@@ -183,7 +183,7 @@ export default function PractiseCard() {
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
             aria-label="Reveal"
           >
-            <GiSheikahEye className="text-xl" />
+            <Eye className="h-5 w-5" strokeWidth={2} />
           </button>
 
           <button
@@ -191,7 +191,7 @@ export default function PractiseCard() {
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-emerald-500/10"
             aria-label="Pass"
           >
-            <GiCheckMark className="text-lg text-emerald-500" />
+            <Check className="h-5 w-5 text-emerald-500" strokeWidth={2} />
           </button>
         </div>
       </div>
