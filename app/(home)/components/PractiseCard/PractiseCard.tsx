@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Check, Eye, XCircle } from "lucide-react";
+import { Check, Eye, PartyPopper, XCircle } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary, LevelChange } from "@/app/db";
 
@@ -58,28 +58,38 @@ export default function PractiseCard() {
   const [isRevealed, setIsRevealed] = useState(false);
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const [isFreePracticeMode, setIsFreePracticeMode] = useState(false);
+  const [includeCompleted, setIncludeCompleted] = useState(true);
 
-  const vocabularies = useLiveQuery(
+  const activeVocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
     [],
   );
 
+  const allVocabularies = useLiveQuery(
+    () => db.vocabularies.toArray(),
+    [],
+  );
+
+  const vocabularies = activeVocabularies;
+  const freePracticePool = includeCompleted ? allVocabularies : activeVocabularies;
+
   const unpractisedToday =
     vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [];
 
+  const currentPool = isFreePracticeMode ? freePracticePool : vocabularies;
   const isCurrentValid =
-    current !== null && vocabularies?.some((v) => v.id === current.id);
+    current !== null && currentPool?.some((v) => v.id === current.id);
 
-  if (vocabularies && vocabularies.length > 0 && !isCurrentValid) {
+  if (currentPool && currentPool.length > 0 && !isCurrentValid) {
     if (!isFreePracticeMode && unpractisedToday.length > 0) {
       setNextItem(pickRandom(unpractisedToday), setCurrent, setSentenceIndex);
     } else {
       if (!isFreePracticeMode) setIsFreePracticeMode(true);
-      setNextItem(pickRandom(vocabularies), setCurrent, setSentenceIndex);
+      setNextItem(pickRandom(currentPool), setCurrent, setSentenceIndex);
     }
   }
 
-  if (vocabularies && vocabularies.length === 0 && current !== null) {
+  if (currentPool && currentPool.length === 0 && current !== null) {
     setCurrent(null);
   }
 
@@ -90,7 +100,7 @@ export default function PractiseCard() {
     : null;
 
   function advance() {
-    if (!vocabularies) return;
+    if (!currentPool) return;
 
     // Exclude the current item — its lastLevelChange is stale in the snapshot
     const remainingUnpractised = unpractisedToday.filter(
@@ -106,7 +116,7 @@ export default function PractiseCard() {
     } else {
       if (!isFreePracticeMode) setIsFreePracticeMode(true);
       setNextItem(
-        pickRandom(vocabularies, current?.id),
+        pickRandom(currentPool, current?.id),
         setCurrent,
         setSentenceIndex,
       );
@@ -196,9 +206,33 @@ export default function PractiseCard() {
         </div>
       </div>
       {isFreePracticeMode && (
-        <p className="text-center text-xs font-medium text-foreground/40 pt-8">
-          Done for today — levels won&apos;t change
-        </p>
+        <div className="flex flex-col items-center gap-4 pt-8">
+          <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
+            <PartyPopper className="h-4 w-4 text-emerald-500" strokeWidth={2} />
+            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              Done for today — free practice mode
+            </p>
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <button
+              role="switch"
+              aria-checked={includeCompleted}
+              onClick={() => setIncludeCompleted((prev) => !prev)}
+              className={`relative h-5 w-9 rounded-full transition-colors ${
+                includeCompleted ? "bg-emerald-500" : "bg-foreground/20"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                  includeCompleted ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </button>
+            <span className="text-xs text-foreground/40">
+              Include completed
+            </span>
+          </label>
+        </div>
       )}
     </>
   );
