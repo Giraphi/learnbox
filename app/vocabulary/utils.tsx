@@ -67,7 +67,7 @@ export async function translateToGerman(
 
     Translate the input English word or phrase to German. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. 
 
-    Additionally, for the English word or phrase, provide exactly 5 short, simple example sentences using that English word or phrase in a way that matches the German meaning. If the English word or phrase is misspelled or not a real word or phrase, return an empty array.   
+    Additionally, for the English word or phrase, provide exactly 10 short, simple example sentences using that English word or phrase in a way that matches the German meaning. Try to make the sentences as diverse as possible. If the English word or phrase is misspelled or not a real word or phrase, return an empty array.   
  `,
   });
 
