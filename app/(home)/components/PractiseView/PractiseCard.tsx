@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import { Check, Eye, XCircle } from "lucide-react";
 import type { Vocabulary } from "@/app/db";
 
@@ -29,8 +30,11 @@ export default function PractiseCard({
     : null;
 
   return (
-    <div
-      key={`${vocabulary.id}-${sentenceIndex}`}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96, y: 8 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96, y: -8 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
       className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-foreground/15 bg-foreground/3 p-6"
     >
       <p className="text-center text-2xl font-semibold tracking-tight">
@@ -75,6 +79,6 @@ export default function PractiseCard({
           <Check className="h-5 w-5 text-emerald-500" strokeWidth={2} />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }

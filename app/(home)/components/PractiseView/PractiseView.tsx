@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
+import { AnimatePresence } from "motion/react";
 import { PartyPopper } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary, LevelChange } from "@/app/db";
@@ -144,12 +145,15 @@ export default function PractiseView() {
 
   return (
     <>
-      <PractiseCard
-        vocabulary={current}
-        sentenceIndex={sentenceIndex}
-        onPass={handlePass}
-        onFail={handleFail}
-      />
+      <AnimatePresence mode="wait">
+        <PractiseCard
+          key={`${current.id}-${sentenceIndex}`}
+          vocabulary={current}
+          sentenceIndex={sentenceIndex}
+          onPass={handlePass}
+          onFail={handleFail}
+        />
+      </AnimatePresence>
       {isFreePracticeMode && (
         <div className="flex flex-col items-center gap-4 pt-8">
           <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
