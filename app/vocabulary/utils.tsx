@@ -30,7 +30,7 @@ export async function translateToEnglish(
     prompt: dedent`   
     You are a translation helper you receive the following English word or phrase: "${trimmed}". 
 
-    Translate the input German word or phrase to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word or phrase and exactly 5 short, simple example sentences using that English word or phrase in a way that matches the German meaning. If the German input is misspelled or not a real word or phrase, return an empty array."
+    Translate the input German word or phrase to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word or phrase and exactly 10 short, simple example sentences using that English word or phrase in a way that matches the German meaning. Try to make the sentences as diverse as possible. If the German input is misspelled or not a real word or phrase, return an empty array."
     `,
   });
 

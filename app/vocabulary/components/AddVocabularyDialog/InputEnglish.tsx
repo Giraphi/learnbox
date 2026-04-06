@@ -93,16 +93,16 @@ export default function InputEnglish({ onAdd, inputRef }: InputEnglishProps) {
               Example sentences
             </p>
             <ul className="flex list-inside list-disc flex-col gap-1">
-              {translationResult.output.englishExampleSentences.map(
-                (sentence, sentenceIndex) => (
+              {translationResult.output.englishExampleSentences
+                .slice(0, 3)
+                .map((sentence, sentenceIndex) => (
                   <li
                     key={sentenceIndex}
                     className="text-xs leading-relaxed text-foreground/50"
                   >
                     {sentence}
                   </li>
-                ),
-              )}
+                ))}
             </ul>
           </div>
         )}
