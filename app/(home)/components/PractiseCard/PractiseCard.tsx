@@ -8,7 +8,7 @@ import type { Vocabulary, LevelChange } from "@/app/db";
 
 function pickRandom(
   items: Vocabulary[],
-  excludeId?: string
+  excludeId?: string,
 ): Vocabulary | null {
   if (items.length === 0) return null;
   const candidates =
@@ -23,7 +23,7 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
 }
 
 function hasPractisedToday(
-  levelChange: LevelChange | undefined | null
+  levelChange: LevelChange | undefined | null,
 ): boolean {
   if (!levelChange) return false;
   if (levelChange.change === "none") return false;
@@ -38,18 +38,18 @@ function hasPractisedToday(
 
 function censorWord(sentence: string, word: string): string {
   return sentence.replace(new RegExp(word, "gi"), (match) =>
-    "_".repeat(Math.floor(match.length * 0.8 + 1))
+    "_".repeat(Math.floor(match.length * 0.8 + 1)),
   );
 }
 
 function setNextItem(
   item: Vocabulary | null,
   setCurrent: (v: Vocabulary | null) => void,
-  setSentenceIndex: (i: number) => void
+  setSentenceIndex: (i: number) => void,
 ) {
   setCurrent(item);
   setSentenceIndex(
-    pickRandomSentenceIndex(item?.exampleSentences?.length ?? 0)
+    pickRandomSentenceIndex(item?.exampleSentences?.length ?? 0),
   );
 }
 
@@ -61,7 +61,7 @@ export default function PractiseCard() {
 
   const vocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
-    []
+    [],
   );
 
   const unpractisedToday =
@@ -94,21 +94,21 @@ export default function PractiseCard() {
 
     // Exclude the current item — its lastLevelChange is stale in the snapshot
     const remainingUnpractised = unpractisedToday.filter(
-      (v) => v.id !== current?.id
+      (v) => v.id !== current?.id,
     );
 
     if (!isFreePracticeMode && remainingUnpractised.length > 0) {
       setNextItem(
         pickRandom(remainingUnpractised),
         setCurrent,
-        setSentenceIndex
+        setSentenceIndex,
       );
     } else {
       if (!isFreePracticeMode) setIsFreePracticeMode(true);
       setNextItem(
         pickRandom(vocabularies, current?.id),
         setCurrent,
-        setSentenceIndex
+        setSentenceIndex,
       );
     }
 
