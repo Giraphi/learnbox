@@ -1,6 +1,7 @@
 "use server";
 
 import { generateText, Output } from "ai";
+import dedent from "dedent";
 import { z } from "zod/v4";
 
 const translationToEnglishSchema = z.object({
@@ -22,12 +23,15 @@ export async function translateToEnglish(
   console.log("##### Calling Google Gemini API...");
 
   const { output } = await generateText({
-    model: "google/gemini-2.5-flash-lite",
+    model: "openai/gpt-4.1-mini",
     output: Output.array({
       element: translationToEnglishSchema,
     }),
-    prompt: `   
-    Translate the following German word to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word and exactly 5 short, simple example sentences using that English word in a way that matches the German meaning. If the German word is misspelled or not a real word, return an empty array.\n\nGerman word: "${trimmed}"`,
+    prompt: dedent`   
+    You are a translation helper you receive the following English word or phrase: "${trimmed}". 
+
+    Translate the input German word or phrase to English. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. For each translation, provide the English word or phrase and exactly 5 short, simple example sentences using that English word or phrase in a way that matches the German meaning. If the German input is misspelled or not a real word or phrase, return an empty array."
+    `,
   });
 
   if (!output || output.length === 0) return { status: "no_translation" };
@@ -54,14 +58,16 @@ export async function translateToGerman(
   console.log("##### Calling Google Gemini API...");
 
   const { output } = await generateText({
-    model: "google/gemini-2.5-flash-lite",
+    model: "openai/gpt-4.1-mini",
     output: Output.object({
       schema: translationToGermanSchema,
     }),
-    prompt: `
-       You are a translation helper you receive the following English word: "${trimmed}". 
-   Translate the English word to German. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. 
-   Additionally, for the english word, provide exactly 5 short, simple example sentences using that English word in a way that matches the German meaning. If the English word is misspelled or not a real word, return an empty array.   
+    prompt: dedent`
+    You are a translation helper you receive the following English word or phrase: "${trimmed}". 
+
+    Translate the input English word or phrase to German. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. 
+
+    Additionally, for the English word or phrase, provide exactly 5 short, simple example sentences using that English word or phrase in a way that matches the German meaning. If the English word or phrase is misspelled or not a real word or phrase, return an empty array.   
  `,
   });
 
