@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { GiScrollQuill } from "react-icons/gi";
 import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
-import AddVocabularyDialog from "@/app/vocabulary/components/AddVocabularyDialog";
+import AddVocabularyDialog from "@/app/vocabulary/components/AddVocabularyDialog/AddVocabularyDialog";
 import VocabularyLevelSection from "@/app/vocabulary/components/VocabularyLevelSection";
 import { FINISHED_LEVEL } from "@/lib/utils";
 
