@@ -1,4 +1,4 @@
-import VocabularyDetail from "@/app/box/[id]/components/VocabularyDetail";
+import VocabularyDetail from "@/app/vocabulary/[id]/components/VocabularyDetail";
 
 type VocabularyDetailPageProps = {
   params: Promise<{ id: string }>;

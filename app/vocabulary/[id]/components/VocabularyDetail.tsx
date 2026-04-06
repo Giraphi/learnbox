@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ChangeIcon from "@/app/vocabulary/components/ChangeIcon";
 import { db } from "@/app/db";
+import { FINISHED_LEVEL } from "@/lib/utils";
 
 type VocabularyDetailProps = {
   id: string;
 };
 
 const MIN_LEVEL = 1;
-const MAX_LEVEL = 5;
+const MAX_LEVEL = FINISHED_LEVEL;
 
 export default function VocabularyDetail({ id }: VocabularyDetailProps) {
   const router = useRouter();
@@ -61,13 +62,13 @@ export default function VocabularyDetail({ id }: VocabularyDetailProps) {
 
   async function handleDelete() {
     await db.vocabularies.delete(id);
-    router.push("/box");
+    router.push("/vocabulary");
   }
 
   return (
     <div className="flex w-full max-w-md flex-col gap-8">
       <button
-        onClick={() => router.push("/box")}
+        onClick={() => router.push("/vocabulary")}
         className="self-start text-sm text-foreground/50 transition-colors hover:text-foreground"
       >
         ← Back

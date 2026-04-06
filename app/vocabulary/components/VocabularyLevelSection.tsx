@@ -27,7 +27,7 @@ export default function VocabularyLevelSection({
           {vocabularies.map((vocab) => (
             <li key={vocab.id}>
               <Link
-                href={`/box/${vocab.id}`}
+                href={`/vocabulary/${vocab.id}`}
                 className="group flex items-center justify-between rounded-lg border border-foreground/10 px-4 py-3 transition-colors hover:bg-foreground/5"
               >
                 <div className="flex items-center gap-4">

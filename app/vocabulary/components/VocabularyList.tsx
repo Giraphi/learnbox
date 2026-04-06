@@ -7,8 +7,9 @@ import { db } from "@/app/db";
 import type { Vocabulary } from "@/app/db";
 import AddVocabularyDialog from "@/app/vocabulary/components/AddVocabularyDialog";
 import VocabularyLevelSection from "@/app/vocabulary/components/VocabularyLevelSection";
+import { FINISHED_LEVEL } from "@/lib/utils";
 
-const LEVELS = [1, 2, 3, 4, 5] as const;
+const LEVELS = Array.from({ length: FINISHED_LEVEL - 1 }, (_, i) => i + 1);
 
 export default function VocabularyList() {
   const vocabularies = useLiveQuery(() =>
