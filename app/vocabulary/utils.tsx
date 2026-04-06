@@ -15,7 +15,7 @@ export type TranslationToEnglishResult =
   | { status: "no_translation" };
 
 export async function translateToEnglish(
-  germanWord: string
+  germanWord: string,
 ): Promise<TranslationToEnglishResult> {
   const trimmed = germanWord.trim();
   if (!trimmed) return { status: "no_translation" };
@@ -47,7 +47,7 @@ export type TranslationToGermanResult =
   | { status: "no_translation" };
 
 export async function translateToGerman(
-  englishWord: string
+  englishWord: string,
 ): Promise<TranslationToGermanResult> {
   const trimmed = englishWord.trim();
   if (!trimmed) return { status: "no_translation" };
@@ -59,7 +59,7 @@ export async function translateToGerman(
       schema: translationToGermanSchema,
     }),
     prompt: `
-       You are a translation helper you receive the following English word: "${trimmed}".
+       You are a translation helper you receive the following English word: "${trimmed}". 
    Translate the English word to German. In case there are multiple possible translations, return up to 3 translations sorted by relevance, but stick to one translation if that one is really matching the German meaning. 
    Additionally, for the english word, provide exactly 5 short, simple example sentences using that English word in a way that matches the German meaning. If the English word is misspelled or not a real word, return an empty array.   
  `,

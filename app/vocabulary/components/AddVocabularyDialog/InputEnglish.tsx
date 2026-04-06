@@ -86,6 +86,27 @@ export default function InputEnglish({ onAdd, inputRef }: InputEnglishProps) {
         </p>
       )}
 
+      {translationResult?.status === "success" &&
+        translationResult.output.englishExampleSentences.length > 0 && (
+          <div className="flex flex-col gap-1.5 rounded-lg border border-foreground/10 px-3 py-2.5 mt-4">
+            <p className="text-xs font-medium text-foreground/60">
+              Example sentences
+            </p>
+            <ul className="flex list-inside list-disc flex-col gap-1">
+              {translationResult.output.englishExampleSentences.map(
+                (sentence, sentenceIndex) => (
+                  <li
+                    key={sentenceIndex}
+                    className="text-xs leading-relaxed text-foreground/50"
+                  >
+                    {sentence}
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
+        )}
+
       {translationResult?.status === "success" && (
         <div className="mt-4 flex flex-col gap-2">
           <p className="text-xs text-foreground/60">
