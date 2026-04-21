@@ -20,7 +20,7 @@ export default function ShaderBackground() {
         animate="on"
         brightness={1.1}
         cAzimuthAngle={180}
-        cDistance={9}
+        cDistance={10}
         cPolarAngle={100}
         cameraZoom={1}
         color1="#5606ff"
