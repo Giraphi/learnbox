@@ -11,7 +11,6 @@ import PoolModeSelector, {
   type PoolMode,
 } from "@/app/(home)/components/PractiseView/PoolModeSelector";
 import { usePractiseState } from "@/contexts/PractiseStateContext";
-import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 
 function pickRandom(
   items: Vocabulary[],
@@ -210,13 +209,7 @@ export default function PractiseView() {
 
   return (
     <div className="relative flex flex-1 flex-col w-full">
-      <ShaderGradientCanvas
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-        pixelDensity={1.5}
-        fov={45}
-      >
-        <ShaderGradient cDistance={32} cPolarAngle={125} />
-      </ShaderGradientCanvas>
+
 
       <div className="relative flex flex-1 flex-col w-full">
         <AnimatePresence mode="wait">
