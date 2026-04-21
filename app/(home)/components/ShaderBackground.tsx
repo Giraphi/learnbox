@@ -7,7 +7,7 @@ export default function ShaderBackground() {
 
   return (
     <ShaderGradientCanvas
-      className="animate-in fade-in duration-100 delay-500 fill-mode-both"
+      className="animate-in fade-in duration-500 delay-100 fill-mode-both"
       style={{
         position: "absolute",
         inset: 0,
@@ -16,17 +16,6 @@ export default function ShaderBackground() {
       pixelDensity={1.5}
       fov={45}
     >
-      {/* <ShaderGradient
-        cDistance={12}
-        cPolarAngle={90}
-        animate="on"
-        uSpeed={0.5}
-        color1="#aaa"
-        color2="#fff"
-        color3="#ff0000"
-        brightness={0.8}
-        envPreset="dawn"
-      /> */}
       <ShaderGradient
         animate="on"
         brightness={1.1}
