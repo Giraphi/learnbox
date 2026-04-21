@@ -35,7 +35,7 @@ export default function PractiseCard({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: -8 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      className="flex w-full max-w-sm flex-col gap-2 rounded-2xl border border-foreground/15 bg-foreground/3 p-6 min-h-[260px] justify-between"
+      className="flex w-full max-w-sm flex-col gap-2 rounded-2xl border border-foreground/15 bg-neutral-900 p-6 min-h-[260px] justify-between "
     >
       <p className="text-center text-2xl font-semibold tracking-tight">
         {vocabulary.german}

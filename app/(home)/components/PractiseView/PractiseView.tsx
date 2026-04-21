@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { AnimatePresence } from "motion/react";
 import { PartyPopper } from "lucide-react";
@@ -10,6 +11,7 @@ import PoolModeSelector, {
   type PoolMode,
 } from "@/app/(home)/components/PractiseView/PoolModeSelector";
 import { usePractiseState } from "@/contexts/PractiseStateContext";
+import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 
 function pickRandom(
   items: Vocabulary[],
@@ -100,31 +102,49 @@ export default function PractiseView() {
   const allVocabularies = useLiveQuery(() => db.vocabularies.toArray(), []);
 
   const vocabularies = activeVocabularies;
-  const freePracticePool = getFreePracticePool({
-    poolMode,
-    activeVocabularies,
-    allVocabularies,
-  });
 
-  const unpractisedToday =
-    vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [];
+  const freePracticePool = useMemo(
+    () =>
+      getFreePracticePool({ poolMode, activeVocabularies, allVocabularies }),
+    [poolMode, activeVocabularies, allVocabularies],
+  );
+
+  const unpractisedToday = useMemo(
+    () =>
+      vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [],
+    [vocabularies],
+  );
 
   const currentPool = isFreePracticeMode ? freePracticePool : vocabularies;
-  const isCurrentValid =
-    current !== null && currentPool?.some((v) => v.id === current.id);
 
-  if (currentPool && currentPool.length > 0 && !isCurrentValid) {
+  useEffect(() => {
+    if (!currentPool) return;
+
+    if (currentPool.length === 0) {
+      if (current !== null) setCurrent(null);
+      return;
+    }
+
+    const isCurrentValid =
+      current !== null && currentPool.some((v) => v.id === current.id);
+    if (isCurrentValid) return;
+
     if (!isFreePracticeMode && unpractisedToday.length > 0) {
       setNextItem(pickRandom(unpractisedToday), setCurrent, setSentenceIndex);
-    } else {
-      if (!isFreePracticeMode) setIsFreePracticeMode(true);
-      setNextItem(pickRandom(currentPool), setCurrent, setSentenceIndex);
+      return;
     }
-  }
 
-  if (currentPool && currentPool.length === 0 && current !== null) {
-    setCurrent(null);
-  }
+    if (!isFreePracticeMode) setIsFreePracticeMode(true);
+    setNextItem(pickRandom(currentPool), setCurrent, setSentenceIndex);
+  }, [
+    currentPool,
+    current,
+    isFreePracticeMode,
+    unpractisedToday,
+    setCurrent,
+    setSentenceIndex,
+    setIsFreePracticeMode,
+  ]);
 
   function advance() {
     if (!currentPool) return;
@@ -189,31 +209,41 @@ export default function PractiseView() {
   }
 
   return (
-    <div className="flex flex-1 flex-col w-full">
-      <AnimatePresence mode="wait">
-        <PractiseCard
-          key={`${current.id}-${sentenceIndex}`}
-          vocabulary={current}
-          sentenceIndex={sentenceIndex}
-          onPass={handlePass}
-          onFail={handleFail}
-        />
-      </AnimatePresence>
-      <div className="flex flex-1 flex-col justify-end pb-20 w-full">
-        {isFreePracticeMode && (
-          <div className="flex flex-col items-center gap-4 pt-8">
-            <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
-              <PartyPopper
-                className="h-4 w-4 text-emerald-500"
-                strokeWidth={2}
-              />
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                Done for today — free practice mode
-              </p>
+    <div className="relative flex flex-1 flex-col w-full">
+      <ShaderGradientCanvas
+        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        pixelDensity={1.5}
+        fov={45}
+      >
+        <ShaderGradient cDistance={32} cPolarAngle={125} />
+      </ShaderGradientCanvas>
+
+      <div className="relative flex flex-1 flex-col w-full">
+        <AnimatePresence mode="wait">
+          <PractiseCard
+            key={`${current.id}-${sentenceIndex}`}
+            vocabulary={current}
+            sentenceIndex={sentenceIndex}
+            onPass={handlePass}
+            onFail={handleFail}
+          />
+        </AnimatePresence>
+        <div className="flex flex-1 flex-col justify-end pb-20 w-full">
+          {isFreePracticeMode && (
+            <div className="flex flex-col items-center gap-4 pt-8">
+              <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
+                <PartyPopper
+                  className="h-4 w-4 text-emerald-500"
+                  strokeWidth={2}
+                />
+                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                  Done for today — free practice mode
+                </p>
+              </div>
+              <PoolModeSelector value={poolMode} onChange={setPoolMode} />
             </div>
-            <PoolModeSelector value={poolMode} onChange={setPoolMode} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
