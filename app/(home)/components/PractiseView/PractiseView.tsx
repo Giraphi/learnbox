@@ -7,6 +7,9 @@ import { PartyPopper } from "lucide-react";
 import { db } from "@/app/db";
 import type { Vocabulary, LevelChange } from "@/app/db";
 import PractiseCard from "@/app/(home)/components/PractiseView/PractiseCard";
+import PoolModeSelector, {
+  type PoolMode,
+} from "@/app/(home)/components/PractiseView/PoolModeSelector";
 
 function pickRandom(
   items: Vocabulary[],
@@ -24,18 +27,46 @@ function pickRandomSentenceIndex(sentenceCount: number): number {
   return Math.floor(Math.random() * sentenceCount);
 }
 
-function hasPractisedToday(
-  levelChange: LevelChange | undefined | null,
-): boolean {
-  if (!levelChange) return false;
-  if (levelChange.change === "none") return false;
+function isToday(date: Date): boolean {
   const now = new Date();
-  const date = levelChange.date;
   return (
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
     date.getDate() === now.getDate()
   );
+}
+
+function hasPractisedToday(
+  levelChange: LevelChange | undefined | null,
+): boolean {
+  if (!levelChange) return false;
+  if (levelChange.change === "none") return false;
+  return isToday(levelChange.date);
+}
+
+function isFailedToday(vocabulary: Vocabulary): boolean {
+  const { lastLevelChange } = vocabulary;
+  if (!lastLevelChange) return false;
+  if (lastLevelChange.change !== "down") return false;
+  return isToday(lastLevelChange.date);
+}
+
+type GetFreePracticePoolParams = {
+  poolMode: PoolMode;
+  activeVocabularies: Vocabulary[] | undefined;
+  allVocabularies: Vocabulary[] | undefined;
+};
+
+function getFreePracticePool({
+  poolMode,
+  activeVocabularies,
+  allVocabularies,
+}: GetFreePracticePoolParams): Vocabulary[] | undefined {
+  if (poolMode === "current") return activeVocabularies;
+  if (poolMode === "failed-today") {
+    return allVocabularies?.filter(isFailedToday);
+  }
+  return allVocabularies;
 }
 
 function setNextItem(
@@ -53,7 +84,7 @@ export default function PractiseView() {
   const [current, setCurrent] = useState<Vocabulary | null>(null);
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const [isFreePracticeMode, setIsFreePracticeMode] = useState(false);
-  const [includeCompleted, setIncludeCompleted] = useState(true);
+  const [poolMode, setPoolMode] = useState<PoolMode>("all");
 
   const activeVocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),
@@ -63,9 +94,11 @@ export default function PractiseView() {
   const allVocabularies = useLiveQuery(() => db.vocabularies.toArray(), []);
 
   const vocabularies = activeVocabularies;
-  const freePracticePool = includeCompleted
-    ? allVocabularies
-    : activeVocabularies;
+  const freePracticePool = getFreePracticePool({
+    poolMode,
+    activeVocabularies,
+    allVocabularies,
+  });
 
   const unpractisedToday =
     vocabularies?.filter((v) => !hasPractisedToday(v.lastLevelChange)) ?? [];
@@ -136,9 +169,16 @@ export default function PractiseView() {
 
   if (!current) {
     return (
-      <p className="text-center text-sm text-foreground/40">
-        No vocabularies to practise.
-      </p>
+      <div className="flex flex-1 flex-col w-full">
+        <p className="text-center text-sm text-foreground/40">
+          No vocabularies to practise.
+        </p>
+        {isFreePracticeMode && (
+          <div className="flex flex-1 flex-col justify-end items-center pb-20 pt-8">
+            <PoolModeSelector value={poolMode} onChange={setPoolMode} />
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -155,7 +195,7 @@ export default function PractiseView() {
       </AnimatePresence>
       <div className="flex flex-1 flex-col justify-end pb-20 w-full">
         {isFreePracticeMode && (
-          <div className="flex flex-col items-center gap-4 pt-8 ">
+          <div className="flex flex-col items-center gap-4 pt-8">
             <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5">
               <PartyPopper
                 className="h-4 w-4 text-emerald-500"
@@ -165,25 +205,7 @@ export default function PractiseView() {
                 Done for today — free practice mode
               </p>
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <button
-                role="switch"
-                aria-checked={includeCompleted}
-                onClick={() => setIncludeCompleted((prev) => !prev)}
-                className={`relative h-5 w-9 rounded-full transition-colors ${
-                  includeCompleted ? "bg-emerald-500" : "bg-foreground/20"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                    includeCompleted ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </button>
-              <span className="text-xs text-foreground/40">
-                Include completed
-              </span>
-            </label>
+            <PoolModeSelector value={poolMode} onChange={setPoolMode} />
           </div>
         )}
       </div>
