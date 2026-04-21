@@ -1,13 +1,25 @@
 "use client";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
+import { useEffect, useState } from "react";
 
 export default function ShaderBackground() {
+  const [isShaderVisible, setIsShaderVisible] = useState(false);
+
+  useEffect(function fadeInAfterShaderMount() {
+    const rafId = requestAnimationFrame(() => {
+      setIsShaderVisible(true);
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
   return (
     <ShaderGradientCanvas
       style={{
         position: "absolute",
         inset: 0,
         pointerEvents: "none",
+        opacity: isShaderVisible ? 1 : 0,
+        transition: "opacity 400ms ease-out",
       }}
       pixelDensity={1.5}
       fov={30}
