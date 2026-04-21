@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function ShaderBackground() {
   const [initialUTime] = useState(() => Math.random() * 100);
 
+  console.log(initialUTime);
   return (
     <ShaderGradientCanvas
       className="animate-in fade-in duration-500 delay-100 fill-mode-both"
@@ -20,9 +21,8 @@ export default function ShaderBackground() {
         animate="on"
         brightness={1.1}
         cAzimuthAngle={180}
-        cDistance={10}
+        cDistance={8}
         cPolarAngle={100}
-        cameraZoom={1}
         color1="#5606ff"
         color2="#fe8989"
         color3="#000000"
@@ -30,7 +30,7 @@ export default function ShaderBackground() {
         grain="off"
         lightType="3d"
         positionX={-0.5}
-        positionY={0.1}
+        positionY={0.5}
         positionZ={0}
         range="disabled"
         rangeEnd={40}
@@ -46,7 +46,6 @@ export default function ShaderBackground() {
         uFrequency={5.5}
         uSpeed={0.1}
         uStrength={2.4}
-        uTime={initialUTime}
         wireframe={false}
       />
     </ShaderGradientCanvas>
