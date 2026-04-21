@@ -56,15 +56,12 @@ export default function PoolModeSelector({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className="flex items-center gap-1.5 rounded-full border border-foreground/15 bg-foreground/5 px-3 py-1.5 text-xs text-foreground/70 transition-colors hover:bg-foreground/10 active:bg-foreground/15"
+        className="flex items-center gap-1.5 rounded-full border border-foreground/15  px-3 py-1.5 text-xs text-foreground/70 transition-colors hover:bg-foreground/10 active:bg-foreground/15 bg-neutral-900"
       >
-        <span className="text-foreground/40">Include:</span>
+        <span className="text-foreground/70">Include:</span>
         <span>{currentLabel}</span>
         <ChevronDown
-          className={cn(
-            "size-3 transition-transform",
-            isOpen && "rotate-180",
-          )}
+          className={cn("size-3 transition-transform", isOpen && "rotate-180")}
           strokeWidth={2.5}
         />
       </button>
@@ -90,7 +87,10 @@ export default function PoolModeSelector({
               >
                 <span>{option.label}</span>
                 {isSelected && (
-                  <Check className="size-3.5 text-emerald-500" strokeWidth={2.5} />
+                  <Check
+                    className="size-3.5 text-emerald-500"
+                    strokeWidth={2.5}
+                  />
                 )}
               </button>
             );
