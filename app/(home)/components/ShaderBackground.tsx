@@ -1,27 +1,64 @@
 "use client";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
+import { useState } from "react";
 
 export default function ShaderBackground() {
+  const [initialUTime] = useState(() => Math.random() * 100);
+
   return (
     <ShaderGradientCanvas
-      className="animate-in fade-in duration-500 delay-500 fill-mode-both"
+      className="animate-in fade-in duration-100 delay-500 fill-mode-both"
       style={{
         position: "absolute",
         inset: 0,
         pointerEvents: "none",
       }}
       pixelDensity={1.5}
-      fov={30}
+      fov={45}
     >
-      <ShaderGradient
+      {/* <ShaderGradient
         cDistance={12}
         cPolarAngle={90}
         animate="on"
         uSpeed={0.5}
         color1="#aaa"
-        color2="#111"
+        color2="#fff"
+        color3="#ff0000"
         brightness={0.8}
         envPreset="dawn"
+      /> */}
+      <ShaderGradient
+        animate="on"
+        brightness={1.1}
+        cAzimuthAngle={180}
+        cDistance={9}
+        cPolarAngle={100}
+        cameraZoom={1}
+        color1="#5606ff"
+        color2="#fe8989"
+        color3="#000000"
+        envPreset="city"
+        grain="off"
+        lightType="3d"
+        positionX={-0.5}
+        positionY={0.1}
+        positionZ={0}
+        range="disabled"
+        rangeEnd={40}
+        rangeStart={0}
+        reflection={0.1}
+        rotationX={0}
+        rotationY={0}
+        rotationZ={235}
+        shader="defaults"
+        type="waterPlane"
+        uAmplitude={0}
+        uDensity={1.1}
+        uFrequency={5.5}
+        uSpeed={0.1}
+        uStrength={2.4}
+        uTime={initialUTime}
+        wireframe={false}
       />
     </ShaderGradientCanvas>
   );
