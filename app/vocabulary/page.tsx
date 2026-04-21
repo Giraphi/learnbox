@@ -16,6 +16,15 @@ export default function BoxPage() {
           <ChevronRight className="size-4" />
         </span>
       </Link>
+      <Link
+        href="/vocabulary/about"
+        className="w-full mt-auto flex items-start gap-1 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+      >
+        <span className="flex items-center gap-1 text-xs font-semibold tracking-wide text-foreground/50 uppercase">
+          About this app
+          <ChevronRight className="size-4" />
+        </span>
+      </Link>
     </div>
   );
 }
