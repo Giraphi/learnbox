@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { AnimatePresence } from "motion/react";
 import { PartyPopper } from "lucide-react";
@@ -10,6 +9,7 @@ import PractiseCard from "@/app/(home)/components/PractiseView/PractiseCard";
 import PoolModeSelector, {
   type PoolMode,
 } from "@/app/(home)/components/PractiseView/PoolModeSelector";
+import { usePractiseState } from "@/contexts/PractiseStateContext";
 
 function pickRandom(
   items: Vocabulary[],
@@ -81,10 +81,16 @@ function setNextItem(
 }
 
 export default function PractiseView() {
-  const [current, setCurrent] = useState<Vocabulary | null>(null);
-  const [sentenceIndex, setSentenceIndex] = useState(0);
-  const [isFreePracticeMode, setIsFreePracticeMode] = useState(false);
-  const [poolMode, setPoolMode] = useState<PoolMode>("all");
+  const {
+    current,
+    setCurrent,
+    sentenceIndex,
+    setSentenceIndex,
+    isFreePracticeMode,
+    setIsFreePracticeMode,
+    poolMode,
+    setPoolMode,
+  } = usePractiseState();
 
   const activeVocabularies = useLiveQuery(
     () => db.vocabularies.where("level").below(6).toArray(),

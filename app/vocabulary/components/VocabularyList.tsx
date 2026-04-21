@@ -13,7 +13,7 @@ const LEVELS = Array.from({ length: FINISHED_LEVEL - 1 }, (_, i) => i + 1);
 
 export default function VocabularyList() {
   const vocabularies = useLiveQuery(() =>
-    db.vocabularies.where("level").belowOrEqual(5).sortBy("level")
+    db.vocabularies.where("level").belowOrEqual(5).sortBy("level"),
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import BottomNavigation from "@/components/BottomNavigation";
 import ShowOnPWA from "@/components/ShowOnPWA";
 import InstallPrompt from "@/components/InstallPrompt";
+import PractiseStateProvider from "@/contexts/PractiseStateContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,8 +39,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ShowOnPWA fallback={<InstallPrompt />}>
-          <main className="flex flex-1 flex-col pb-16">{children}</main>
-          <BottomNavigation />
+          <PractiseStateProvider>
+            <main className="flex flex-1 flex-col pb-16">{children}</main>
+            <BottomNavigation />
+          </PractiseStateProvider>
         </ShowOnPWA>
       </body>
     </html>
