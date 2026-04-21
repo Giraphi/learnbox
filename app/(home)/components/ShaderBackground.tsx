@@ -5,7 +5,6 @@ import { useState } from "react";
 export default function ShaderBackground() {
   const [initialUTime] = useState(() => Math.random() * 100);
 
-  console.log(initialUTime);
   return (
     <ShaderGradientCanvas
       className="animate-in fade-in duration-500 delay-100 fill-mode-both"
@@ -32,9 +31,9 @@ export default function ShaderBackground() {
         positionX={-0.5}
         positionY={0.5}
         positionZ={0}
-        range="disabled"
-        rangeEnd={40}
-        rangeStart={0}
+        range="enabled"
+        rangeStart={initialUTime}
+        rangeEnd={initialUTime + 1000000}
         reflection={0.1}
         rotationX={0}
         rotationY={0}
@@ -46,6 +45,7 @@ export default function ShaderBackground() {
         uFrequency={5.5}
         uSpeed={0.1}
         uStrength={2.4}
+        uTime={0}
         wireframe={false}
       />
     </ShaderGradientCanvas>
