@@ -8,7 +8,7 @@ export default function ShaderBackground() {
       pixelDensity={1.5}
       fov={45}
     >
-      <ShaderGradient cDistance={4} cPolarAngle={90} />
+      <ShaderGradient cDistance={6} cPolarAngle={90} />
     </ShaderGradientCanvas>
   );
 }
