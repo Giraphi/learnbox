@@ -209,7 +209,7 @@ export default function PractiseView() {
 
   return (
     <div className="relative flex flex-1 flex-col w-full">
-      <div className="relative flex flex-1 flex-col w-full">
+      <div className="relative flex flex-1 flex-col w-full pt-10">
         <AnimatePresence mode="wait">
           <PractiseCard
             key={`${current.id}-${sentenceIndex}`}

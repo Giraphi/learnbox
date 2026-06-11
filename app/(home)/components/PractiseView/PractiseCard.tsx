@@ -43,7 +43,7 @@ export default function PractiseCard({
       </div>
 
       {exampleSentence && (
-        <div className="rounded-xl bg-foreground/5 px-4 py-3">
+        <div className="rounded-xl bg-foreground/8 px-4 py-3">
           <p className="text-center text-sm italic text-foreground/70">
             {isRevealed ? (
               exampleSentence
@@ -69,7 +69,7 @@ export default function PractiseCard({
         <button
           onClick={() => setIsRevealed(true)}
           disabled={isRevealed}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-foreground/5 disabled:opacity-40"
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/8 transition-colors hover:bg-foreground/5 disabled:opacity-40"
           aria-label="Reveal"
         >
           <Eye className="h-5 w-5" strokeWidth={2} />
