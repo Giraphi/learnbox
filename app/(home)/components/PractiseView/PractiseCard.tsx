@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Check, Eye, XCircle } from "lucide-react";
 import type { Vocabulary } from "@/app/db";
+import CensoredSentence from "@/app/(home)/components/PractiseView/CensoredSentence";
 
 type PractiseCardProps = {
   vocabulary: Vocabulary;
@@ -9,12 +10,6 @@ type PractiseCardProps = {
   onPass: () => void;
   onFail: () => void;
 };
-
-function censorWord(sentence: string, word: string): string {
-  return sentence.replace(new RegExp(word, "gi"), (match) =>
-    "_".repeat(Math.floor(match.length * 0.8 + 1)),
-  );
-}
 
 export default function PractiseCard({
   vocabulary,
@@ -25,9 +20,6 @@ export default function PractiseCard({
   const [isRevealed, setIsRevealed] = useState(false);
 
   const exampleSentence = vocabulary.exampleSentences?.[sentenceIndex] ?? null;
-  const censoredSentence = exampleSentence
-    ? censorWord(exampleSentence, vocabulary.english)
-    : null;
 
   return (
     <motion.div
@@ -35,25 +27,37 @@ export default function PractiseCard({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: -8 }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      className="flex w-full max-w-sm flex-col gap-2 rounded-2xl border border-foreground/15 bg-neutral-900 p-6 min-h-[260px] justify-between "
+      className="flex w-full max-w-sm min-h-[260px] flex-col gap-2 rounded-2xl border border-foreground/15 bg-neutral-900 p-3"
     >
-      <p className="text-center text-2xl font-semibold tracking-tight">
-        {vocabulary.german}
-      </p>
-      {exampleSentence && (
-        <p className="text-center text-sm italic text-foreground/70">
-          {isRevealed ? exampleSentence : censoredSentence}
+      <div className="relative flex flex-1 items-center justify-center rounded-xl bg-foreground/8 px-4 py-5">
+        <p className="text-center text-2xl font-semibold tracking-tight">
+          {vocabulary.german}
         </p>
-      )}
-      <p
-        className={`text-center text-base text-foreground/70 ${
-          isRevealed ? "visible" : "invisible"
-        }`}
-      >
-        {vocabulary.english}
-      </p>
+        <p
+          className={`absolute inset-x-0 bottom-3 text-center text-base text-foreground/70 ${
+            isRevealed ? "visible" : "invisible"
+          }`}
+        >
+          {vocabulary.english}
+        </p>
+      </div>
 
-      <div className="flex justify-between justify-self-end">
+      {exampleSentence && (
+        <div className="rounded-xl bg-foreground/5 px-4 py-3">
+          <p className="text-center text-sm italic text-foreground/70">
+            {isRevealed ? (
+              exampleSentence
+            ) : (
+              <CensoredSentence
+                sentence={exampleSentence}
+                word={vocabulary.english}
+              />
+            )}
+          </p>
+        </div>
+      )}
+
+      <div className="flex justify-between rounded-xl bg-foreground/2 p-2">
         <button
           onClick={onFail}
           className="flex h-10 w-10 items-center justify-center rounded-xl border border-foreground/15 transition-colors hover:bg-red-500/10"
